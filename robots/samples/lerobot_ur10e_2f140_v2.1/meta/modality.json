@@ -1,0 +1,53 @@
+{
+ "state": {
+  "left_arm": {
+   "start": 0,
+   "end": 6
+  },
+  "right_arm": {
+   "start": 6,
+   "end": 12
+  },
+  "left_gripper": {
+   "start": 12,
+   "end": 13
+  },
+  "right_gripper": {
+   "start": 13,
+   "end": 14
+  },
+  "product_pose": {
+   "original_key": "observation.environment_state",
+   "start": 0,
+   "end": 7
+  },
+  "carrying": {
+   "original_key": "observation.environment_state",
+   "start": 7,
+   "end": 9
+  }
+ },
+ "action": {
+  "left_arm": {
+   "start": 0,
+   "end": 6
+  },
+  "right_arm": {
+   "start": 6,
+   "end": 12
+  },
+  "left_gripper": {
+   "start": 12,
+   "end": 13
+  },
+  "right_gripper": {
+   "start": 13,
+   "end": 14
+  }
+ },
+ "annotation": {
+  "human.task_description": {
+   "original_key": "task_index"
+  }
+ }
+}

@@ -1,0 +1,78 @@
+{
+ "name": "ARCADE-Checkout-Human",
+ "release_version": "1.0.0",
+ "schema": {
+  "name": "arcade_human",
+  "version": "1.0.0"
+ },
+ "description": "Human checkout demonstrations at a self-checkout counter: 3-D body and hand pose, product 6-DoF trajectories, grasp/release events, hand-object holding labels and object segmentation masks.",
+ "session": "capture_20260818_01",
+ "fps": 19.940648891050056,
+ "n_episodes": 2,
+ "n_frames": 338,
+ "n_events": 6,
+ "n_mask_files": 859,
+ "products": [
+  "mesil",
+  "pepero_white"
+ ],
+ "cameras_for_masks": [
+  "left",
+  "right",
+  "top"
+ ],
+ "coordinate_frame": {
+  "name": "counter",
+  "handedness": "right",
+  "x_axis": "forward: the direction the shopper faces, across the counter",
+  "y_axis": "left of the shopper",
+  "z_axis": "up, normal of the counter top",
+  "origin": "on the counter top (z = 0), at the checkout-lane centroid",
+  "position_unit": "meter",
+  "rotation": "quaternion, order xyzw, scalar last",
+  "pose_vector": "[x, y, z, qx, qy, qz, qw]"
+ },
+ "wrist_frame": {
+  "origin": "hand landmark 'wrist'",
+  "x_axis": "wrist -> middle_mcp (along the fingers)",
+  "y_axis": "right hand: pinky_mcp -> index_mcp; left hand: index_mcp -> pinky_mcp; orthogonalised against x",
+  "z_axis": "x cross y: the back-of-hand normal (the palm faces -z) for both hands",
+  "derived_from": "released hand landmarks (no extra measurement)"
+ },
+ "object_frame": {
+  "origin": "centre of the product mesh bounding box",
+  "axes": "product axes; a cylinder's axis and a box's 'h' edge are the local z axis",
+  "mesh": "objects/<product>/<product>_p<perm>.obj is already expressed in this frame, so world_vertex = R(q) @ mesh_vertex + p"
+ },
+ "object_states": {
+  "0": "rest_before",
+  "1": "held_left",
+  "2": "held_right",
+  "3": "rest_after"
+ },
+ "event_kinds": [
+  "grasp",
+  "release"
+ ],
+ "not_included": {
+  "rgb": "RGB video and frames are not released (they show people)",
+  "scan_events": "none: the point-of-sale scanner was not linked during this capture",
+  "product_physics": "mass and friction were not measured",
+  "face_keypoints": "not released"
+ },
+ "selection": "all segmented episodes",
+ "provenance": {
+  "session": "capture_20260818_01",
+  "processed": "2026-11-10"
+ },
+ "files": {
+  "meta/info.json": "dataset-level metadata, versions and conventions",
+  "meta/episodes.jsonl": "one JSON object per episode (index of data/human_motion.hdf5)",
+  "meta/products.json": "product catalogue: shape, dimensions, mesh variants",
+  "meta/skeleton.json": "joint / landmark names and connectivity",
+  "data/human_motion.hdf5": "all per-frame data, one group per episode",
+  "objects/": "product meshes (OBJ + MTL + texture), one variant per axis permutation",
+  "segmentation/": "per episode: instances.json and masks.zip, binary masks of the tracked objects (optional)"
+ },
+ "built_utc": "2026-11-24T08:54:00Z"
+}

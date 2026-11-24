@@ -1,0 +1,194 @@
+{
+ "kind": "ARCADE FFW-SH5 retargeting (hand retarget + Pink IK)",
+ "counter": {
+  "x0": -0.5510113525390625,
+  "x1": 0.057046213746070856,
+  "y0": -0.8397461128234863,
+  "y1": 0.5413019907474518,
+  "yaw": 0.0,
+  "top_z": 0.0,
+  "n_episodes": 114
+ },
+ "counter_h": 0.8,
+ "release": {
+  "name": "ARCADE-Checkout-Human",
+  "version": "1.0.0",
+  "session": "capture_20260818_01"
+ },
+ "urdf": "ffw_sh5_rev1_follower/ffw_sh5_follower.urdf (ROBOTIS ai_worker@9bc7f7b)",
+ "args": {
+  "fps": 19.94,
+  "counter_h": 0.8,
+  "sig_tip": 0.005,
+  "sig_dir": 0.15,
+  "sig_palm": 0.25,
+  "sig_tq": 0.15,
+  "sig_tp": 0.01,
+  "sig_tr": 0.1,
+  "g_self": 4.0,
+  "self_gap": 0.0015,
+  "self_tol": 0.0005,
+  "self_margin": 0.008,
+  "tau": 0.0005,
+  "nfev": 30,
+  "fq_vmax": 0.2,
+  "hand_spacing": 0.005,
+  "base_spacing": 0.008,
+  "plan_k": 50,
+  "clear": 0.005,
+  "fade_n": 6,
+  "avoid_rounds": 4,
+  "avoid_vmax": 0.01,
+  "avoid_max": 0.2,
+  "fwd_cost": 1.0,
+  "retreat": 0.1,
+  "retreat_n": 15,
+  "rel_n": 3,
+  "approach_w": 20,
+  "yield_d0": 0.12,
+  "yield_d1": 0.25,
+  "yield_n": 10,
+  "arm_margin": 0.02,
+  "tr_hh": 0.05,
+  "buf_pre": 20,
+  "buf_post": 20,
+  "idle_home": 0,
+  "idle_tol": 0.001,
+  "edge_pad": 90,
+  "tr_v": 0.6,
+  "tr_jv": 1.5,
+  "park_p0": 0.03,
+  "park_p1": 0.1,
+  "tr_min": 12,
+  "tr_base": 0.3,
+  "track_warm": 10,
+  "ramp_n": 10,
+  "w_hand": 20.0,
+  "w_rot": 4.0,
+  "w_elbow": 2.0,
+  "w_post": 1.0,
+  "hold_gain": 10.0,
+  "iters": 30,
+  "dt": 0.02,
+  "ik_tol": 1e-10,
+  "dx_grid": [
+   0.0,
+   -0.1,
+   -0.2,
+   -0.3
+  ],
+  "smooth": 9,
+  "w_base": 5.0,
+  "base_v": 0.5,
+  "base_w": 1.0,
+  "robot_clear": 0.1,
+  "counter_near": 0.03,
+  "counter_far": 0.15,
+  "counter_side": 0.12,
+  "hh_margin": 0.02,
+  "post_hh": 0.0,
+  "tr_ramp": 6,
+  "home_iters": 200,
+  "rt_gain": 0.8,
+  "retime_rounds": 3,
+  "rt_tol": 15.0,
+  "rt_k": 15.0,
+  "rt_step": 2.0,
+  "rt_max": 4.0,
+  "rt_max_free": 8.0
+ },
+ "mobile_base": true,
+ "barriers": {
+  "torso": [
+   [
+    [
+     0.0,
+     -0.08,
+     0.0
+    ],
+    0.09
+   ],
+   [
+    [
+     0.0,
+     -0.08,
+     -0.12
+    ],
+    0.09
+   ],
+   [
+    [
+     0.0,
+     0.0,
+     0.0
+    ],
+    0.09
+   ],
+   [
+    [
+     0.0,
+     0.0,
+     -0.12
+    ],
+    0.09
+   ],
+   [
+    [
+     0.0,
+     0.08,
+     0.0
+    ],
+    0.09
+   ],
+   [
+    [
+     0.0,
+     0.08,
+     -0.12
+    ],
+    0.09
+   ],
+   [
+    [
+     0.0,
+     0.0,
+     -0.24
+    ],
+    0.07
+   ]
+  ],
+  "front": [
+   [
+    "arm_base_link",
+    [
+     0.09,
+     -0.15,
+     0.0
+    ]
+   ],
+   [
+    "arm_base_link",
+    [
+     0.09,
+     0.0,
+     0.0
+    ]
+   ],
+   [
+    "arm_base_link",
+    [
+     0.09,
+     0.15,
+     0.0
+    ]
+   ]
+  ],
+  "hand_r": 0.045
+ },
+ "episodes": 2,
+ "minutes": null,
+ "provenance": {
+  "processed": "2026-11-10",
+  "note": "computed with arcade_retarget.ffw_sh5 from the ARCADE-Checkout-Human episodes of session capture_20260818_01"
+ }
+}

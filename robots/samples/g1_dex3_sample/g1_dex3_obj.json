@@ -1,0 +1,128 @@
+{
+ "kind": "ARCADE Unitree G1 + Dex3-1 product trajectory (output steps)",
+ "ik": "g1_dex3_ik.npz",
+ "source": {
+  "session": "capture_20260818_01"
+ },
+ "episodes": {
+  "J02771_right": {
+   "dims": {
+    "shape": "box",
+    "l": 0.21,
+    "w": 0.05,
+    "h": 0.05
+   },
+   "product": "diget",
+   "mesh": "objects/diget/diget_p102.obj",
+   "mesh_perm": [
+    1,
+    0,
+    2
+   ],
+   "holding": [
+    {
+     "hand": "right",
+     "start": 24,
+     "end": 85
+    }
+   ],
+   "task_kind": "one_hand",
+   "counter": {
+    "center": [
+     -0.23727835968447614,
+     -0.14396114947573835
+    ],
+    "size": [
+     0.5780875163643547,
+     1.3220943281494577
+    ],
+    "yaw": 0.0
+   },
+   "check": {
+    "hand_in_product_max_mm": 0.0,
+    "hands_min_distance_mm": 40.1,
+    "arm_body_min_distance_mm": 50.9,
+    "counter_max_mm": 0.0,
+    "com_margin_min_mm": 19.8,
+    "foot_slide_max_mm": 0.2,
+    "steps_taken": 0
+   },
+   "physics": {
+    "all_held": true,
+    "holds": [
+     {
+      "hand": "right",
+      "start": 24,
+      "end": 85,
+      "verdict": "held"
+     }
+    ]
+   }
+  },
+  "J08320_left": {
+   "dims": {
+    "shape": "box",
+    "l": 0.165,
+    "w": 0.025,
+    "h": 0.089
+   },
+   "product": "pepero_white",
+   "mesh": "objects/pepero_white/pepero_white_p120.obj",
+   "mesh_perm": [
+    1,
+    2,
+    0
+   ],
+   "holding": [
+    {
+     "hand": "left",
+     "start": 24,
+     "end": 35
+    },
+    {
+     "hand": "right",
+     "start": 29,
+     "end": 71
+    }
+   ],
+   "task_kind": "pass",
+   "counter": {
+    "center": [
+     -0.23727835968447614,
+     -0.14396114947573835
+    ],
+    "size": [
+     0.5780875163643547,
+     1.3220943281494577
+    ],
+    "yaw": 0.0
+   },
+   "check": {
+    "hand_in_product_max_mm": 2.8,
+    "hands_min_distance_mm": 2.9,
+    "arm_body_min_distance_mm": 12.9,
+    "counter_max_mm": 5.1,
+    "com_margin_min_mm": 19.5,
+    "foot_slide_max_mm": 0.2,
+    "steps_taken": 0
+   },
+   "physics": {
+    "all_held": true,
+    "holds": [
+     {
+      "hand": "left",
+      "start": 24,
+      "end": 35,
+      "verdict": "held"
+     },
+     {
+      "hand": "right",
+      "start": 29,
+      "end": 71,
+      "verdict": "held"
+     }
+    ]
+   }
+  }
+ }
+}

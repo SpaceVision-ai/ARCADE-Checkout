@@ -1,0 +1,11 @@
+{
+ "train": [
+  0
+ ],
+ "val": [],
+ "test": [
+  1
+ ],
+ "boundary": [],
+ "note": "time blocks of arcade_human.splits.time_split: no session frame is shared between train, val and test; boundary episodes belong to none of them"
+}

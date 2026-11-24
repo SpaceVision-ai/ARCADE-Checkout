@@ -1,0 +1,23 @@
+{
+ "source": "ARCADE FFW-SH5 retargeting",
+ "version": "1.0.0",
+ "counter_h": 0.8,
+ "frame": "robot world: floor z = 0",
+ "capture_fps": 19.94,
+ "fps": 20,
+ "timing": "one row per retargeted step; steps follow the 19.94 Hz capture clock and are stamped at a nominal 20 Hz",
+ "retarget": {
+  "name": "ARCADE-Checkout-Human",
+  "version": "1.0.0",
+  "session": "capture_20260818_01"
+ },
+ "counter": {
+  "x0": -0.5510113525390625,
+  "x1": 0.057046213746070856,
+  "y0": -0.8397461128234863,
+  "y1": 0.5413019907474518,
+  "yaw": 0.0,
+  "top_z": 0.0,
+  "n_episodes": 114
+ }
+}

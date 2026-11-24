@@ -1,0 +1,42 @@
+{
+ "products": {
+  "mesil": {
+   "shape": "cylinder",
+   "dims_median_m": {
+    "h": 0.2099,
+    "r": 0.0374
+   },
+   "n_episodes": 1,
+   "meshes": {
+    "201": {
+     "path": "objects/mesil/mesil_p201.obj"
+    }
+   },
+   "mass_kg": null,
+   "friction": null,
+   "note": "dims are measured per episode (see episode attrs); mass and friction were not measured"
+  },
+  "pepero_white": {
+   "shape": "box",
+   "dims_median_m": {
+    "h": 0.025,
+    "l": 0.165,
+    "w": 0.089
+   },
+   "n_episodes": 1,
+   "meshes": {
+    "102": {
+     "path": "objects/pepero_white/pepero_white_p102.obj"
+    }
+   },
+   "mass_kg": null,
+   "friction": null,
+   "note": "dims are measured per episode (see episode attrs); mass and friction were not measured"
+  }
+ },
+ "object_frame": {
+  "origin": "centre of the product mesh bounding box",
+  "axes": "product axes; a cylinder's axis and a box's 'h' edge are the local z axis",
+  "mesh": "objects/<product>/<product>_p<perm>.obj is already expressed in this frame, so world_vertex = R(q) @ mesh_vertex + p"
+ }
+}

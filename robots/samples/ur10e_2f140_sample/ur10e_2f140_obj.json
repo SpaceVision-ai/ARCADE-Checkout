@@ -1,0 +1,89 @@
+{
+ "kind": "ARCADE UR10e + Robotiq 2F-140 product trajectory (output steps)",
+ "ik": "ur10e_2f140_ik.npz",
+ "source": {
+  "session": "capture_20260818_01"
+ },
+ "episodes": {
+  "J01160_right": {
+   "dims": {
+    "shape": "cylinder",
+    "r": 0.037431,
+    "h": 0.209882
+   },
+   "product": "mesil",
+   "mesh": "objects/mesil/mesil_p201.obj",
+   "mesh_perm": [
+    2,
+    0,
+    1
+   ],
+   "holding": [
+    {
+     "arm": "right",
+     "start": 153,
+     "end": 472
+    }
+   ],
+   "task_kind": "one_arm",
+   "counter": {
+    "center": [
+     -0.23727835968447614,
+     -0.14396114947573835
+    ],
+    "size": [
+     0.5780875163643547,
+     1.3220943281494577
+    ],
+    "yaw": 0.0
+   },
+   "track": {
+    "product_shift_max_mm": 0,
+    "product_shift_frames_over_20mm": 0
+   }
+  },
+  "J05489_left": {
+   "dims": {
+    "shape": "box",
+    "l": 0.165,
+    "w": 0.025,
+    "h": 0.089
+   },
+   "product": "pepero_white",
+   "mesh": "objects/pepero_white/pepero_white_p120.obj",
+   "mesh_perm": [
+    1,
+    2,
+    0
+   ],
+   "holding": [
+    {
+     "arm": "left",
+     "start": 284,
+     "end": 442
+    },
+    {
+     "arm": "right",
+     "start": 391,
+     "end": 556
+    }
+   ],
+   "task_kind": "pass",
+   "counter": {
+    "center": [
+     -0.23727835968447614,
+     -0.14396114947573835
+    ],
+    "size": [
+     0.5780875163643547,
+     1.3220943281494577
+    ],
+    "yaw": 0.0
+   },
+   "track": {
+    "product_shift_max_mm": 0,
+    "product_shift_frames_over_20mm": 0
+   }
+  }
+ }
+}

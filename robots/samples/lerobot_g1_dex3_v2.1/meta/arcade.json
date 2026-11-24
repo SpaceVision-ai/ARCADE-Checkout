@@ -1,0 +1,38 @@
+{
+ "source": "ARCADE Unitree G1 + Dex3-1 retargeting",
+ "version": "1.0.0",
+ "counter_h": 0.8,
+ "frame": "robot world: floor z = 0",
+ "capture_fps": 19.94,
+ "fps": 20,
+ "timing": "one row per retargeted step; steps follow the 19.94 Hz capture clock and are stamped at a nominal 20 Hz",
+ "retarget": {
+  "session": "capture_20260818_01"
+ },
+ "counter": {
+  "x0": -0.5263221178666535,
+  "x1": 0.051765398497701245,
+  "y0": -0.8050083135504672,
+  "y1": 0.5170860145989905,
+  "yaw": 0.0,
+  "top_z": 0.0,
+  "n_episodes": 114
+ },
+ "pelvis": "observation.state 43-49: pelvis position (robot world) and orientation quaternion xyzw",
+ "physics": {
+  "engine": "MuJoCo",
+  "per_hold": true,
+  "product_mass_kg": 0.3,
+  "friction": 1.0,
+  "pelvis_and_wrists": "follow the released trajectory",
+  "fingers": "position servos, torque-limited",
+  "held_mm": 20.0,
+  "lost_mm": 60.0,
+  "verdicts": {
+   "held": "the product stays in the hand",
+   "slipped": "it moves more than 60 mm in the hand",
+   "lost": "fewer than two hand links touch it for 3 steps",
+   "no_carry": "the product is not carried in this hold"
+  }
+ }
+}

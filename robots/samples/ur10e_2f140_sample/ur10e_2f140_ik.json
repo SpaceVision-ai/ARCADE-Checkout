@@ -1,0 +1,104 @@
+{
+ "kind": "ARCADE UR10e + Robotiq 2F-140 retargeting (two arms, grasp planning + IK)",
+ "robot": "ur10e_2f140",
+ "robot_type": "ur10e_2f140_dual",
+ "urdf": "ur10e_2f140_dual.urdf (retarget/universal_robots_ur10e_robotiq_2f140/fetch_robot.sh: Universal_Robots_ROS2_Description@0eb1a86, ros-industrial robotiq@45196f6)",
+ "counter": {
+  "x0": -0.5263221178666535,
+  "x1": 0.051765398497701245,
+  "y0": -0.8050083135504672,
+  "y1": 0.5170860145989905,
+  "yaw": 0.0,
+  "top_z": 0.0,
+  "n_episodes": 114
+ },
+ "counter_h": 0.8,
+ "bases": {
+  "left": {
+   "xyz": [
+    -1.237278359684476,
+    0.35603885052426165,
+    0.8
+   ],
+   "rpy": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "right": {
+   "xyz": [
+    -1.237278359684476,
+    -0.6439611494757383,
+    0.8
+   ],
+   "rpy": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "mount": {
+  "parent": "tool0",
+  "child": "robotiq_arg2f_base_link",
+  "xyz": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "rpy": [
+   0.0,
+   0.0,
+   -1.5707963267948966
+  ],
+  "note": "the gripper sits directly on the tool flange (no coupling), turned -90 degrees about the tool z axis"
+ },
+ "rest_q": {
+  "left": [
+   -0.02677,
+   -1.5708,
+   1.5708,
+   0.0,
+   1.5708,
+   0.0
+  ],
+  "right": [
+   -0.37584,
+   -1.5708,
+   1.5708,
+   0.0,
+   1.5708,
+   0.0
+  ]
+ },
+ "source": {
+  "session": "capture_20260818_01"
+ },
+ "args": {
+  "fps": 19.94,
+  "joint_velocity_limit_deg_s": [
+   120,
+   120,
+   180,
+   180,
+   180,
+   180
+  ],
+  "joint_acceleration_limit_deg_s2": [
+   150,
+   150,
+   250,
+   300,
+   300,
+   300
+  ]
+ },
+ "episodes": [
+  "J01160_right",
+  "J05489_left"
+ ],
+ "provenance": {
+  "processed": "2026-11-16"
+ }
+}

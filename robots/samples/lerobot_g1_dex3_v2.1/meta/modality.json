@@ -1,0 +1,85 @@
+{
+ "state": {
+  "left_leg": {
+   "start": 0,
+   "end": 6
+  },
+  "right_leg": {
+   "start": 6,
+   "end": 12
+  },
+  "waist": {
+   "start": 12,
+   "end": 15
+  },
+  "left_arm": {
+   "start": 15,
+   "end": 22
+  },
+  "left_hand": {
+   "start": 22,
+   "end": 29
+  },
+  "right_arm": {
+   "start": 29,
+   "end": 36
+  },
+  "right_hand": {
+   "start": 36,
+   "end": 43
+  },
+  "pelvis": {
+   "start": 43,
+   "end": 50
+  },
+  "product_pose": {
+   "original_key": "observation.environment_state",
+   "start": 0,
+   "end": 7
+  },
+  "carrying": {
+   "original_key": "observation.environment_state",
+   "start": 7,
+   "end": 9
+  }
+ },
+ "action": {
+  "left_leg": {
+   "start": 0,
+   "end": 6
+  },
+  "right_leg": {
+   "start": 6,
+   "end": 12
+  },
+  "waist": {
+   "start": 12,
+   "end": 15
+  },
+  "left_arm": {
+   "start": 15,
+   "end": 22
+  },
+  "left_hand": {
+   "start": 22,
+   "end": 29
+  },
+  "right_arm": {
+   "start": 29,
+   "end": 36
+  },
+  "right_hand": {
+   "start": 36,
+   "end": 43
+  },
+  "pelvis": {
+   "start": 43,
+   "end": 50
+  }
+ },
+ "annotation": {
+  "human.task_description": {
+   "original_key": "task_index"
+  }
+ }
+}

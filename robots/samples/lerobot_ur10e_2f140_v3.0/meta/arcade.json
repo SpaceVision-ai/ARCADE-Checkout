@@ -1,0 +1,62 @@
+{
+ "source": "ARCADE UR10e + Robotiq 2F-140 retargeting",
+ "version": "1.0.0",
+ "counter_h": 0.8,
+ "frame": "robot world: floor z = 0",
+ "capture_fps": 19.94,
+ "fps": 20,
+ "timing": "one row per retargeted step; steps follow the 19.94 Hz capture clock and are stamped at a nominal 20 Hz",
+ "retarget": {
+  "session": "capture_20260818_01"
+ },
+ "counter": {
+  "x0": -0.5263221178666535,
+  "x1": 0.051765398497701245,
+  "y0": -0.8050083135504672,
+  "y1": 0.5170860145989905,
+  "yaw": 0.0,
+  "top_z": 0.0,
+  "n_episodes": 114
+ },
+ "bases": {
+  "left": {
+   "xyz": [
+    -1.237278359684476,
+    0.35603885052426165,
+    0.8
+   ],
+   "rpy": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "right": {
+   "xyz": [
+    -1.237278359684476,
+    -0.6439611494757383,
+    0.8
+   ],
+   "rpy": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  }
+ },
+ "mount": {
+  "parent": "tool0",
+  "child": "robotiq_arg2f_base_link",
+  "xyz": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "rpy": [
+   0.0,
+   0.0,
+   -1.5707963267948966
+  ],
+  "note": "the gripper sits directly on the tool flange (no coupling), turned -90 degrees about the tool z axis"
+ }
+}

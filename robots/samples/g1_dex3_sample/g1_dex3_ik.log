@@ -1,0 +1,2 @@
+J02771_right n 105 source frames 2771.0-2875.0 (105) | holds R 24-85 | one_hand | hand in product max 0.0 mm, hands min 40.1 mm, arm-body min 50.9 mm, counter max 0.0 mm, CoM margin min 19.8 mm | physics R held | product pose known 100% of steps
+J08320_left n 91 source frames 8320.0-8410.0 (91) | holds L 24-35 R 29-71 | pass | hand in product max 2.8 mm, hands min 2.9 mm, arm-body min 12.9 mm, counter max 5.1 mm, CoM margin min 19.5 mm | physics L held R held | product pose known 100% of steps

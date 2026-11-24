@@ -1,0 +1,2 @@
+{"episode_index": 0, "tasks": ["Pick up the box from the checkout counter with the right hand and put it down."], "length": 228, "source_episode_id": "J02562_right", "product": "pepero_white", "source_frames": [2542, 2711]}
+{"episode_index": 1, "tasks": ["Pick up the bottle from the checkout counter with the left hand, pass it to the right hand, and put it down."], "length": 205, "source_episode_id": "J03826_left", "product": "mesil", "source_frames": [3806, 3973]}

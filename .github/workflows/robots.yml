@@ -1,0 +1,59 @@
+name: robots
+on:
+  # the robot package reads the human data through arcade-human, so changes there run these tests too
+  push:
+    paths: ["robots/**", "human/**", ".github/workflows/robots.yml"]
+  pull_request:
+    paths: ["robots/**", "human/**", ".github/workflows/robots.yml"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: robots
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ../human -e ".[dev,render]"
+      - run: pip install -e ".[solver]"   # the solver needs SciPy >= 1.16, i.e. Python >= 3.11
+        if: matrix.python-version != '3.10'
+      - run: pip install -e ".[robot]" && bash retarget/universal_robots_ur10e_robotiq_2f140/fetch_robot.sh   # UR10e + 2F-140 URDF for the FK test
+        if: matrix.python-version != '3.10'
+      - run: bash retarget/unitree_g1_dex3/fetch_robot.sh   # G1 + Dex3-1 URDF and MJCF for the FK tests
+        if: matrix.python-version != '3.10'
+      - run: python -c "import arcade_human.render, arcade_retarget.render, arcade_retarget.export_lerobot"
+      - run: pytest -q
+  lerobot:
+    # the samples load with current lerobot (codebase v3.0) and with lerobot 0.3.x (codebase v2.1)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: robots
+    strategy:
+      matrix:
+        include:
+          - {python: "3.12", lerobot: "lerobot[dataset]", sample: samples/lerobot_ffw_sh5_v3.0, state: 60}
+          - {python: "3.10", lerobot: "lerobot==0.3.3", sample: samples/lerobot_ffw_sh5_v2.1, state: 60}
+          - {python: "3.12", lerobot: "lerobot[dataset]", sample: samples/lerobot_ur10e_2f140_v3.0, state: 14}
+          - {python: "3.10", lerobot: "lerobot==0.3.3", sample: samples/lerobot_ur10e_2f140_v2.1, state: 14}
+          - {python: "3.12", lerobot: "lerobot[dataset]", sample: samples/lerobot_g1_dex3_v3.0, state: 50}
+          - {python: "3.10", lerobot: "lerobot==0.3.3", sample: samples/lerobot_g1_dex3_v2.1, state: 50}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install "${{ matrix.lerobot }}" --extra-index-url https://download.pytorch.org/whl/cpu
+      - run: |
+          python - <<'PY'
+          from lerobot.datasets.lerobot_dataset import LeRobotDataset
+          ds = LeRobotDataset("local/arcade", root="${{ matrix.sample }}")
+          f = ds[0]
+          assert f["observation.state"].shape[-1] == ${{ matrix.state }} and f["observation.environment_state"].shape[-1] == 9
+          print(ds.num_episodes, ds.num_frames, f["task"])
+          PY

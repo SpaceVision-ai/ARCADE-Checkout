@@ -1,0 +1,2 @@
+J01160_right n 723 source frames 1112.0-1377.5 (267) | holds R 153-472 | one_arm | gripper max L 0.000 R 0.373 rad | rest steps L 723 R 0 | product pose known 64% of steps, shift max 0 mm
+J05489_left n 781 source frames 5426.0-5634.8 (210) | holds L 284-442 R 391-556 | pass | gripper max L 0.648 R 0.294 rad | rest steps L 55 R 11 | product pose known 65% of steps, shift max 0 mm

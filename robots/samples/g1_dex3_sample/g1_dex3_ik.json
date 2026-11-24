@@ -1,0 +1,121 @@
+{
+ "kind": "ARCADE Unitree G1 + Dex3-1 retargeting (whole-body IK with planned grasps)",
+ "robot": "g1_dex3",
+ "robot_type": "unitree_g1_dex3",
+ "urdf": "g1_29dof_with_hand_rev_1_0.urdf (retarget/unitree_g1_dex3/fetch_robot.sh: unitreerobotics/unitree_ros@157ff95)",
+ "counter": {
+  "x0": -0.5263221178666535,
+  "x1": 0.051765398497701245,
+  "y0": -0.8050083135504672,
+  "y1": 0.5170860145989905,
+  "yaw": 0.0,
+  "top_z": 0.0,
+  "n_episodes": 114
+ },
+ "counter_edge": {
+  "note": "near edge x(y) of the counter that the robot's legs, pelvis and torso stay behind",
+  "y": [
+   -0.7850083135504672,
+   -0.7350083135504671,
+   -0.6850083135504671,
+   -0.635008313550467,
+   -0.585008313550467,
+   -0.535008313550467,
+   -0.4850083135504669,
+   -0.4350083135504669,
+   -0.38500831355046683,
+   -0.3350083135504668,
+   -0.28500831355046674,
+   -0.2350083135504667,
+   -0.18500831355046665,
+   -0.1350083135504666,
+   -0.08500831355046656,
+   -0.03500831355046652,
+   0.014991686449533526,
+   0.06499168644953357,
+   0.11499168644953361,
+   0.16499168644953366,
+   0.2149916864495337,
+   0.26499168644953375,
+   0.3149916864495338,
+   0.36499168644953384,
+   0.4149916864495339,
+   0.4649916864495339
+  ],
+  "x": [
+   -0.2867677757427554,
+   -0.2867677757427554,
+   -0.5303373500780659,
+   -0.4978254399049974,
+   -0.4978254399049974,
+   -0.5363221178666535,
+   -0.47817589805721805,
+   -0.4753208361171872,
+   -0.44943308471361726,
+   -0.2981642652505478,
+   -0.2981642652505478,
+   -0.34341078032551536,
+   -0.34341078032551536,
+   -0.27894147034177086,
+   -0.29698359280387754,
+   -0.29698359280387754,
+   -0.29698359280387754,
+   -0.3495305091945499,
+   -0.3921425764044087,
+   -0.4042997662443697,
+   -0.4042997662443697,
+   -0.4002568340945341,
+   -0.3996068524713383,
+   -0.41125798444180806,
+   -0.41125798444180806,
+   -0.41125798444180806
+  ],
+  "y0": -0.8050083135504672,
+  "y1": 0.5170860145989905,
+  "x1": 0.051765398497701245
+ },
+ "counter_h": 0.8,
+ "tip_offset_m": 0.045,
+ "source": {
+  "session": "capture_20260818_01"
+ },
+ "args": {
+  "fps": 19.94,
+  "stance": "fixed: both feet stay where they start (no steps)",
+  "joint_speed_cap_rad_s": {
+   "arm": 3.0,
+   "leg": 3.0,
+   "hand": 5.0
+  },
+  "product_path_smoothing": {
+   "method": "Savitzky-Golay",
+   "order": 2,
+   "window_frames": 9,
+   "while_held": true
+  },
+  "hand_over_retiming_max_product_speed_m_s": 0.4
+ },
+ "physics": {
+  "engine": "MuJoCo",
+  "per_hold": true,
+  "product_mass_kg": 0.3,
+  "friction": 1.0,
+  "pelvis_and_wrists": "follow the released trajectory",
+  "fingers": "position servos, torque-limited",
+  "held_mm": 20.0,
+  "lost_mm": 60.0,
+  "verdicts": {
+   "held": "the product stays in the hand",
+   "slipped": "it moves more than 60 mm in the hand",
+   "lost": "fewer than two hand links touch it for 3 steps",
+   "no_carry": "the product is not carried in this hold"
+  }
+ },
+ "episodes": [
+  "J02771_right",
+  "J08320_left"
+ ],
+ "provenance": {
+  "processed": "2026-11-21"
+ }
+}

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arcade-human"
+version = "1.0.0"
+description = "Reader, validator and tools for ARCADE-Checkout-Human: 3-D hand-object demonstrations at a self-checkout counter"
+readme = "README.md"
+license = "CC-BY-NC-4.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.22", "h5py>=3.6", "pillow>=10"]
+
+[project.optional-dependencies]
+viz = ["matplotlib>=3.5"]
+render = ["mujoco>=3.3.3"]
+viewer = ["rerun-sdk>=0.28"]
+dev = ["pytest>=7", "matplotlib>=3.5"]
+
+[project.urls]
+Repository = "https://github.com/SpaceVision-ai/ARCADE-Checkout/tree/main/human"
+Overview = "https://github.com/SpaceVision-ai/ARCADE-Checkout"
+
+[project.scripts]
+arcade-human = "arcade_human.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["arcade_human*"]

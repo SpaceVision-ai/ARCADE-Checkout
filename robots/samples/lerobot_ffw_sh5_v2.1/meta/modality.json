@@ -1,0 +1,77 @@
+{
+ "state": {
+  "left_arm": {
+   "start": 0,
+   "end": 7
+  },
+  "right_arm": {
+   "start": 7,
+   "end": 14
+  },
+  "left_hand": {
+   "start": 14,
+   "end": 34
+  },
+  "right_hand": {
+   "start": 34,
+   "end": 54
+  },
+  "head": {
+   "start": 54,
+   "end": 56
+  },
+  "lift": {
+   "start": 56,
+   "end": 57
+  },
+  "base": {
+   "start": 57,
+   "end": 60
+  },
+  "product_pose": {
+   "original_key": "observation.environment_state",
+   "start": 0,
+   "end": 7
+  },
+  "carrying": {
+   "original_key": "observation.environment_state",
+   "start": 7,
+   "end": 9
+  }
+ },
+ "action": {
+  "left_arm": {
+   "start": 0,
+   "end": 7
+  },
+  "right_arm": {
+   "start": 7,
+   "end": 14
+  },
+  "left_hand": {
+   "start": 14,
+   "end": 34
+  },
+  "right_hand": {
+   "start": 34,
+   "end": 54
+  },
+  "head": {
+   "start": 54,
+   "end": 56
+  },
+  "lift": {
+   "start": 56,
+   "end": 57
+  },
+  "base": {
+   "start": 57,
+   "end": 60
+  }
+ },
+ "annotation": {
+  "human.task_description": {
+   "original_key": "task_index"
+  }
+ }
+}

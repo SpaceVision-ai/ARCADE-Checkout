@@ -1,0 +1,96 @@
+{
+ "kind": "ARCADE FFW-SH5 product trajectory (output steps)",
+ "attach": true,
+ "ik": "ffw_sh5_ik.npz",
+ "release": {
+  "name": "ARCADE-Checkout-Human",
+  "version": "1.0.0",
+  "session": "capture_20260818_01"
+ },
+ "episodes": {
+  "J02562_right": {
+   "dims": {
+    "shape": "box",
+    "l": 0.165,
+    "w": 0.089,
+    "h": 0.025
+   },
+   "product": "pepero_white",
+   "mesh": "objects/pepero_white/pepero_white_p102.obj",
+   "mesh_perm": [
+    1,
+    0,
+    2
+   ],
+   "holding": [
+    {
+     "hand": "right",
+     "start": 68,
+     "end": 166
+    }
+   ],
+   "counter": {
+    "center": [
+     -0.24698256939649582,
+     -0.14922206103801727
+    ],
+    "size": [
+     0.6080575662851334,
+     1.381048103570938
+    ],
+    "yaw": 0.0
+   },
+   "track": {
+    "hold_dev_p50_mm": 0.0,
+    "hold_dev_p90_mm": 0.2,
+    "hold_dev_max_mm": 14.9,
+    "hold_rot_max_deg": 5.1,
+    "place_dev_mm": 0.2
+   }
+  },
+  "J03826_left": {
+   "dims": {
+    "shape": "cylinder",
+    "r": 0.037431,
+    "h": 0.209882
+   },
+   "product": "mesil",
+   "mesh": "objects/mesil/mesil_p201.obj",
+   "mesh_perm": [
+    2,
+    0,
+    1
+   ],
+   "holding": [
+    {
+     "hand": "left",
+     "start": 70,
+     "end": 139
+    },
+    {
+     "hand": "right",
+     "start": 139,
+     "end": 156
+    }
+   ],
+   "counter": {
+    "center": [
+     -0.24698256939649582,
+     -0.14922206103801727
+    ],
+    "size": [
+     0.6080575662851334,
+     1.381048103570938
+    ],
+    "yaw": 0.0
+   },
+   "track": {
+    "hold_dev_p50_mm": 0.0,
+    "hold_dev_p90_mm": 0.1,
+    "hold_dev_max_mm": 10.0,
+    "hold_rot_max_deg": 1.5,
+    "place_dev_mm": 0.0
+   }
+  }
+ }
+}

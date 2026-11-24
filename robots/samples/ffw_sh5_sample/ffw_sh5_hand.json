@@ -1,0 +1,5 @@
+{
+ "kind": "ARCADE FFW-SH5 finger trajectories (HX5-D20)",
+ "ik": "ffw_sh5_ik.npz",
+ "episodes": 2
+}
