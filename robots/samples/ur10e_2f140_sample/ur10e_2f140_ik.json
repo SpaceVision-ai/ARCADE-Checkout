@@ -4,13 +4,12 @@
  "robot_type": "ur10e_2f140_dual",
  "urdf": "ur10e_2f140_dual.urdf (retarget/universal_robots_ur10e_robotiq_2f140/fetch_robot.sh: Universal_Robots_ROS2_Description@0eb1a86, ros-industrial robotiq@45196f6)",
  "counter": {
-  "x0": -0.5263221178666535,
-  "x1": 0.051765398497701245,
-  "y0": -0.8050083135504672,
-  "y1": 0.5170860145989905,
+  "x0": -0.551,
+  "x1": 0.057,
+  "y0": -0.84,
+  "y1": 0.541,
   "yaw": 0.0,
-  "top_z": 0.0,
-  "n_episodes": 114
+  "top_z": 0.0
  },
  "counter_h": 0.8,
  "bases": {
@@ -54,25 +53,9 @@
   ],
   "note": "the gripper sits directly on the tool flange (no coupling), turned -90 degrees about the tool z axis"
  },
- "rest_q": {
-  "left": [
-   -0.02677,
-   -1.5708,
-   1.5708,
-   0.0,
-   1.5708,
-   0.0
-  ],
-  "right": [
-   -0.37584,
-   -1.5708,
-   1.5708,
-   0.0,
-   1.5708,
-   0.0
-  ]
- },
- "source": {
+ "release": {
+  "name": "ARCADE-Checkout-Human",
+  "version": "1.1.0",
   "session": "capture_20260818_01"
  },
  "args": {
@@ -95,10 +78,11 @@
   ]
  },
  "episodes": [
-  "J01160_right",
-  "J05489_left"
+  "J00601_right",
+  "J02562_right",
+  "J03826_left"
  ],
  "provenance": {
-  "processed": "2026-11-16"
+  "processed": "2026-11-25"
  }
 }

@@ -6,7 +6,12 @@ The third retargeting target is a humanoid:
 * a Unitree **Dex3-1** hand on each arm, with three fingers and 7 joints: thumb 3, index 2, middle 2;
 * a free-floating pelvis.
 
-The robot is about 1.3 m tall. It stands on the floor, 0.80 m below the counter top.
+The robot is about 1.3 m tall. In the data it does not stand on the floor but on a step 0.35 m
+high in front of the counter, so that the counter top (0.80 m above the floor) is at a working
+height for its arms. The step is part of the data, not of the robot description: the fetched URDF
+and MJCF hold the robot only, and the step is recorded as `stand` (height and footprint) in
+`g1_dex3_ik.json` and in `meta/arcade.json` ([docs/RETARGETING_G1.md](../../docs/RETARGETING_G1.md#the-step)).
+The preview renderer draws it from there.
 
 The robot description is **not vendored** here. It is fetched from upstream at a fixed commit:
 
@@ -18,7 +23,7 @@ The robot description is **not vendored** here. It is fetched from upstream at a
 bash retarget/unitree_g1_dex3/fetch_robot.sh      # -> retarget/unitree_g1_dex3/upstream/ (about 160 MB)
 ```
 
-The retargeting used the URDF, with a free-flyer pelvis in Pinocchio. The preview renderer loads
+The retargeting used the URDF, with a free-flyer pelvis. The preview renderer loads
 the MJCF (`.xml`) of the same model.
 
 The dataset's joint names are the URDF joint names, in URDF order:
@@ -32,15 +37,16 @@ The dataset's joint names are the URDF joint names, in URDF order:
 
 ```python
 from arcade_retarget import g1_dex3 as g1
-model = g1.pin_model()                     # Pinocchio: free-flyer G1 + fingertip frames <side>_<finger>_tip
-q = g1.pin_configuration(state)            # 50-D dataset state (43 joints + pelvis pose) -> Pinocchio q
+poses = g1.link_poses(state)               # 50-D dataset state (43 joints + pelvis pose) -> {link: 4x4 pose}
+tips = g1.fingertips(state)                # {hand: (3, 3)} thumb, index and middle fingertip points
 ```
 
 ## Frames
 
 * **Pelvis pose.** In the raw outputs the pelvis pose `[x, y, z, qx, qy, qz, qw]` is in the counter
   frame (counter top at `z = 0`). In the LeRobot state it is in the robot world (floor at `z = 0`):
-  `z` is raised by `counter_h`. The quaternion is scalar-last, as in Pinocchio.
+  `z` is raised by `counter_h`. The feet are on the step, whose top is at `z = 0.35` in the robot
+  world. The quaternion is scalar-last.
 * **MuJoCo.** MuJoCo's free joint stores the quaternion scalar-first; `arcade_retarget.render.G1Scene`
   converts it.
 * **Fingertip points.** Each fingertip point is 45 mm along the last link of its finger
@@ -49,6 +55,6 @@ q = g1.pin_configuration(state)            # 50-D dataset state (43 joints + pel
 ## Check
 
 Forward kinematics of the released joints and pelvis pose on the fetched URDF reproduces the
-recorded fingertip points to float32 precision in all 80 episodes. The MuJoCo model agrees with the
-URDF to 0.002 mm. `tests/test_g1_sample.py` repeats both checks on the sample, and also checks that
-every joint value is within the URDF limits.
+recorded fingertip points to float32 precision. The MuJoCo model agrees with the URDF to 0.002 mm.
+`tests/test_g1_sample.py` runs both checks on the sample, and also checks that every joint value is
+within the URDF limits.

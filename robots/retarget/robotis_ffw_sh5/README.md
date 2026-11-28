@@ -22,6 +22,5 @@ at the exact commit the released trajectories were computed with:
 bash retarget/robotis_ffw_sh5/fetch_robot.sh            # -> retarget/robotis_ffw_sh5/ai_worker/ (about 190 MB)
 ```
 
-The script does a sparse, blob-less clone and checks the URDF's SHA-256. The retargeting
-finds it at that default location. To keep it elsewhere, set `ARCADE_FFW_DIR=/path/to/ai_worker`
-or pass `--urdf` / `--mesh-root`.
+The script does a sparse, blob-less clone and checks the URDF's SHA-256. The renderer and the tests
+find it at that default location. To keep it elsewhere, set `ARCADE_FFW_DIR=/path/to/ai_worker`.

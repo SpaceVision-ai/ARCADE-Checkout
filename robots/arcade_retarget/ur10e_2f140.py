@@ -42,19 +42,29 @@ ROBOTIQ_PACKAGE = "robotiq_2f_140_gripper_visualization"
 
 
 def package_dirs(upstream: str = UPSTREAM_DIR) -> List[str]:
-    """Roots that resolve the ``package://`` mesh paths of the URDF (pinocchio ``package_dirs``)."""
+    """Roots that resolve the ``package://`` mesh paths of the URDF."""
     return [upstream, os.path.join(upstream, "robotiq")]
 
 
 def config(path: Optional[str] = None) -> Dict:
-    """Layout, mount, rest pose and gripper table (``configs/ur10e_2f140.json``)."""
+    """Layout, mount and gripper tables (``configs/ur10e_2f140.json``)."""
     return json.load(open(path or os.path.join(CONFIG_DIR, "ur10e_2f140.json")))
 
 
 def gripper_gap(finger_joint, cfg: Optional[Dict] = None) -> np.ndarray:
-    """Inner-pad gap (m) of the simulated 2F-140 used for the retargeting at a finger_joint value (rad)."""
+    """Opening (m) that a released finger_joint value (rad) means: the inner-pad gap of the 2F-140 model
+    used for the retargeting."""
     g = (cfg or config())["gripper"]
     return np.interp(finger_joint, g["finger_joint"], g["pad_gap_m"])
+
+
+def urdf_finger_joint(finger_joint, cfg: Optional[Dict] = None) -> np.ndarray:
+    """finger_joint (rad) at which the pads of the URDF built by fetch_robot.sh have the opening that a
+    released finger_joint value means. That URDF's linkage differs from the model the data was made with:
+    at the same joint value its pads are 12 to 16 mm closer, and it opens to 128 mm, not 144 mm (wider
+    openings map to 0)."""
+    g = (cfg or config())["gripper"]
+    return np.interp(gripper_gap(finger_joint, cfg), g["urdf_pad_gap_m"][::-1], g["urdf_finger_joint"][::-1])
 
 
 # --- tasks ---------------------------------------------------------------------------------------------

@@ -1,2 +1,2 @@
-"""arcade_retarget: robot retargeting and LeRobot exports for ARCADE-Checkout."""
-__version__ = "1.0.0"
+"""arcade_retarget: robot data of ARCADE-Checkout: LeRobot export, robot models and rendering."""
+__version__ = "1.1.0"

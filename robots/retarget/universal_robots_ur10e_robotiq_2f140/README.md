@@ -3,7 +3,8 @@
 The second retargeting target is a fixed two-arm cell:
 
 * two Universal Robots **UR10e** arms (6 joints each) on pedestals at counter-top height, on the
-  shopper's side of the counter, 1.0 m apart;
+  shopper's side of the counter, 1.0 m apart: one to the left and one to the right of the shopper's
+  position;
 * a Robotiq **2F-140** parallel gripper on each arm, mounted directly on the tool flange.
 
 The robot descriptions are **not vendored** here. They are fetched from upstream at fixed commits:
@@ -38,29 +39,34 @@ robot world frame (`x` across the counter, `y` the shopper's left, `z` up, metre
 | left arm `base_link` | `(-1.2373, 0.3560, 0.80)`, no rotation |
 | right arm `base_link` | `(-1.2373, -0.6440, 0.80)`, no rotation |
 | gripper mount | `tool0` → `robotiq_arg2f_base_link`: no offset, −90° about the tool `z` axis |
-| rest pose (both arms) | upper arm up, forearm and gripper level toward the counter (`rest_q` in the config) |
 
-The bases are 1.0 m behind the counter centre and 1.0 m apart, at counter-top height.
+The bases are 1.0 m behind the counter centre and 1.0 m apart, at counter-top height. The released
+raw outputs record the same base poses and mount (`ur10e_2f140_ik.json -> bases`, `mount`), and the
+LeRobot export copies them to `meta/arcade.json`.
 
 ## Gripper
 
-The state holds each gripper's `finger_joint` in radians: `0` is fully open, the upstream upper
-limit is `0.7`. The data uses `0` to `0.648`. The opening in metres is in the config as a table of
-the inner-pad gap against `finger_joint`, measured on the simulated 2F-140 used for the
-retargeting (144 mm open, closed at about 0.77 rad):
+The state holds each gripper's `finger_joint` in radians: `0` is fully open. The values belong to
+the 2F-140 model the retargeting was made with (144 mm open, closed at about 0.77 rad), which is
+**not** the URDF built here. What a value means is the opening, the gap between the inner pads; the
+config holds it as a table against `finger_joint`:
 
 ```python
-from arcade_retarget.ur10e_2f140 import gripper_gap
-gripper_gap(0.294)          # 0.0907 m
+from arcade_retarget.ur10e_2f140 import gripper_gap, urdf_finger_joint
+gripper_gap(0.294)          # 0.0907 m: the opening this value means
+urdf_finger_joint(0.294)    # 0.228 rad: the same opening on the URDF built here
 ```
 
-The upstream URDF moves the inner fingers through fixed `<mimic>` ratios, so its pad positions
-follow a slightly different path from the simulated gripper's; use the table for the opening.
+The upstream URDF moves the inner fingers through fixed `<mimic>` ratios and has a different
+linkage: it opens to 128 mm and is closed at its upper limit `0.7`. At the same `finger_joint` its
+pads are 12 to 16 mm closer than the data means (6 to 8 mm per side), so a released value applied
+to this URDF as it is puts the pads inside the product. Convert through the opening
+(`urdf_finger_joint`; the config holds the URDF's own table, `urdf_pad_gap_m`). The preview renderer
+does. On another 2F-140 model or on the real gripper, command the opening from `gripper_gap`.
 
 ## Check
 
 On the fetched URDF, forward kinematics of the released joint positions puts both gripper base
-frames where the raw outputs record them (`<arm>__gripper_T`): largest difference **0.0002 mm and
-0.00003°** over all 45 episodes (42,087 steps). The MuJoCo model that the preview renderer loads
-from the same URDF agrees to 0.0004 mm. `tests/test_ur10e_sample.py` repeats both checks on the
-sample, and also checks that every joint value is within the URDF limits.
+frames where the raw outputs record them (`<arm>__gripper_T`), and so does the MuJoCo model that
+the preview renderer loads from the same URDF. `tests/test_ur10e_sample.py` runs both checks on the
+sample (tolerance 0.01 mm), and also checks that every joint value is within the URDF limits.

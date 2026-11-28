@@ -1,11 +1,11 @@
 """Side-by-side video: a human demonstration (ARCADE-Checkout-Human) and its retargeting (FFW-SH5, two UR10e or G1).
 
-  python -m arcade_retarget.render --release REL --retarget build/ffw_sh5 \\
+  python -m arcade_retarget.render --release REL --retarget samples/ffw_sh5_sample/ffw_sh5 \\
       --episodes J03826_left --out preview.mp4 --webp preview.webp
   python -m arcade_retarget.render --release REL --retarget samples/ur10e_2f140_sample/ur10e_2f140 \\
-      --episodes J05489_left --stride 2 --out ur10e.mp4
+      --episodes J02562_right --stride 2 --out ur10e.mp4
   python -m arcade_retarget.render --release REL --retarget samples/g1_dex3_sample/g1_dex3 \\
-      --episodes J02771_right --out g1.mp4
+      --episodes J03826_left --out g1.mp4
 
 The robot is read from PREFIX_ik.json, as in the exporter. Two UR10e: the URDF built by
 ``retarget/universal_robots_ur10e_robotiq_2f140/fetch_robot.sh``, loaded with MuJoCo's URDF importer (the UR10e collision meshes
@@ -18,8 +18,8 @@ and, because the G1 is about 1.3 m tall, zooms in on the robot (``--robot-zoom``
 Left: the recorded shopper (a mannequin with 21-landmark hands) and the product. Right: the
 ROBOTIS FFW-SH5, the upstream MuJoCo model (``ffw_description/mujoco/ffw_sh5``, fetched by
 ``retarget/robotis_ffw_sh5/fetch_robot.sh``), posed from the released joint trajectories, with the
-product at its retargeted pose. The model's forward kinematics match the URDF the solver
-used. Underneath: the episode's language task and when each hand holds the product; a grey
+product at its retargeted pose. The model's forward kinematics match the URDF the data was
+made with. Underneath: the episode's language task and when each hand holds the product; a grey
 band marks where the robot blends from or to its home pose. Nothing is simulated; this is a
 kinematic replay.
 
@@ -110,13 +110,15 @@ class UR10eScene(RobotScene):
         m = self.model
         self.qadr = {m.joint(i).name: int(m.jnt_qposadr[i]) for i in range(m.njnt)}
         self.mimic = ur.mimic_joints()
+        self.ur = ur
         self.names = ur.STATE_NAMES
 
     def set_robot(self, state):
-        """state: the 14-D dataset state (12 arm joints, then the two finger_joint values)."""
+        """state: the 14-D dataset state (12 arm joints, then the two finger_joint values). The gripper is
+        drawn at the opening the released value means (``ur10e_2f140.urdf_finger_joint``)."""
         d = self.data
         for n, v in zip(self.names, state):
-            d.qpos[self.qadr[n]] = v
+            d.qpos[self.qadr[n]] = self.ur.urdf_finger_joint(v) if n.endswith("finger_joint") else v
         for j, (src, k, off) in self.mimic.items():
             if j in self.qadr:
                 d.qpos[self.qadr[j]] = k * d.qpos[self.qadr[src]] + off
@@ -127,7 +129,8 @@ class G1Scene(RobotScene):
 
     ROBOT_GROUP = 1                                    # the MJCF's visual meshes are in group 1
 
-    def __init__(self, counter: Dict, counter_h: float, product_meshes: Dict[str, str], recess: Optional[Dict] = None):
+    def __init__(self, counter: Dict, counter_h: float, product_meshes: Dict[str, str], recess: Optional[Dict] = None,
+                 stand: Optional[Dict] = None):
         import mujoco
         from arcade_human import render as R
         from arcade_retarget import g1_dex3 as g1
@@ -140,6 +143,11 @@ class G1Scene(RobotScene):
                 spec.delete(g)
         spec = R.studio_spec(spec)
         R.add_counter(spec, counter["x0"], counter["x1"], counter["y0"], counter["y1"], height=counter_h, recess=recess)
+        if stand and stand.get("height", 0) > 0:       # the step the robot stands on (PREFIX_ik.json "stand"), robot world
+            h = float(stand["height"])
+            spec.worldbody.add_geom(name="arcade_stand", type=mujoco.mjtGeom.mjGEOM_BOX, rgba=[0.42, 0.46, 0.52, 1.0],
+                                    size=[(stand["x1"] - stand["x0"]) / 2, (stand["y1"] - stand["y0"]) / 2, h / 2],
+                                    pos=[(stand["x0"] + stand["x1"]) / 2, (stand["y0"] + stand["y1"]) / 2, h / 2])
         self.product_body = R.add_products(spec, product_meshes)
         self.model = spec.compile()
         self.data = mujoco.MjData(self.model)
@@ -148,8 +156,9 @@ class G1Scene(RobotScene):
         self.base = self.qadr[next(m.joint(i).name for i in range(m.njnt) if m.jnt_type[i] == mujoco.mjtJoint.mjJNT_FREE)]
         self.names = g1.JOINT_NAMES
 
-    #: robot panel zoom (camera distance divided by this); the G1 is about 1.3 m tall, so the shared view shows it small
-    ZOOM = 1.6
+    #: robot panel zoom (camera distance divided by this); the G1 is about 1.3 m tall, so the shared view shows it small.
+    #: The view keeps the feet and the step the robot stands on in the picture
+    ZOOM = 1.15
 
     @staticmethod
     def robot_view(state: np.ndarray, counter_h: float, zoom: float):
@@ -157,7 +166,7 @@ class G1Scene(RobotScene):
         in front of the pelvis, ``zoom`` times closer than the shared view."""
         from arcade_human import render as R
         x, y = np.median(state[:, 43]), np.median(state[:, 44])
-        return R.View(lookat=(float(x) + 0.12, float(y), counter_h + 0.22), distance=2.65 / zoom, azimuth=160.0,
+        return R.View(lookat=(float(x) + 0.12, float(y), float(np.median(state[:, 45])) - 0.05), distance=2.65 / zoom, azimuth=160.0,
                       elevation=-18.0)
 
     def set_robot(self, state):
@@ -214,6 +223,8 @@ def _render_holding_robot(ds, retarget: str, episodes: List[str], out: str, webp
     meshes = {obm[e]["mesh"]: os.path.join(ds.root, obm[e]["mesh"]) for e in episodes}
     meshes.update({"human:" + e: eps[e].product_mesh_path for e in episodes})
     sc = scene_cls(ikm["counter"], ch, meshes, recess=dict(R.CAPTURE_RECESS, y=R.shopper_y(ds, episodes)))
+    if ikm.get("stand"):                                # the G1 stands on a step in front of the counter
+        sc = scene_cls(ikm["counter"], ch, meshes, recess=dict(R.CAPTURE_RECESS, y=R.shopper_y(ds, episodes)), stand=ikm["stand"])
     s = width / LAYOUT["width"]
     strip_h = int(round(LAYOUT["strip"] * height / LAYOUT["height"] / 2)) * 2
     gutter = max(2, int(round(LAYOUT["gutter"] * s / 2)) * 2)

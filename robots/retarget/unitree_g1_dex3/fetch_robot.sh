@@ -5,7 +5,7 @@
 #   bash retarget/unitree_g1_dex3/fetch_robot.sh [DEST]      (default: retarget/unitree_g1_dex3/upstream, about 160 MB)
 #
 # Only g1_29dof_with_hand_rev_1_0.urdf / .xml and their meshes are checked out. The URDF is what the
-# retargeting used (Pinocchio, free-flyer pelvis); the MJCF is what the preview renderer loads.
+# retargeting used (free-flyer pelvis); the MJCF is what the preview renderer loads.
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 DEST=${1:-$HERE/upstream}

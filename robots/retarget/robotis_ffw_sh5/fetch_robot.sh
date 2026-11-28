@@ -23,6 +23,7 @@ git sparse-checkout init --cone
 git sparse-checkout set ffw_description/urdf ffw_description/meshes ffw_description/mujoco
 git fetch --quiet origin "$COMMIT"
 git checkout --quiet "$COMMIT"
-echo "$URDF_SHA256  $URDF_REL" | sha256sum -c --quiet || { echo "URDF checksum mismatch"; exit 1; }
+SUM=$( (sha256sum "$URDF_REL" 2>/dev/null || shasum -a 256 "$URDF_REL") | cut -d' ' -f1)   # macOS has no GNU sha256sum
+[ "$SUM" = "$URDF_SHA256" ] || { echo "URDF checksum mismatch"; exit 1; }
 echo "URDF:      $DEST/$URDF_REL"
 echo "mesh root: $DEST/"

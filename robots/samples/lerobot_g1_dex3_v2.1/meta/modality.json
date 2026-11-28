@@ -37,7 +37,7 @@
    "start": 0,
    "end": 7
   },
-  "carrying": {
+  "holding": {
    "original_key": "observation.environment_state",
    "start": 7,
    "end": 9

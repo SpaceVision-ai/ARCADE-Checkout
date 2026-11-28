@@ -1,2 +1,3 @@
-{"task_index": 0, "task": "Pick up the bottle from the checkout counter with the right arm and put it down."}
+{"task_index": 0, "task": "Pick up the box from the checkout counter with the right arm, pass it to the left arm, and put it down."}
 {"task_index": 1, "task": "Pick up the box from the checkout counter with the left arm, pass it to the right arm, and put it down."}
+{"task_index": 2, "task": "Pick up the bottle from the checkout counter with the left arm, pass it to the right arm, and put it down."}

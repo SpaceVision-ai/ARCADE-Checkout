@@ -1,4 +1,4 @@
-"""Checks on the Unitree G1 + Dex3-1 sample: raw outputs, LeRobot exports, tasks, physics flags and the robot description."""
+"""Checks on the Unitree G1 + Dex3-1 sample: raw outputs, LeRobot exports, tasks and the robot description."""
 import json
 import os
 
@@ -12,7 +12,8 @@ ROOT = os.path.join(HERE, "..", "samples")
 RT = os.path.join(ROOT, "g1_dex3_sample", "g1_dex3")
 LR21 = os.path.join(ROOT, "lerobot_g1_dex3_v2.1")
 LR30 = os.path.join(ROOT, "lerobot_g1_dex3_v3.0")
-EPS = ["J02771_right", "J08320_left"]
+EPS = ["J00601_right", "J02562_right", "J03826_left"]
+ORDER = ["J02562_right", "J03826_left", "J00601_right"]   # LeRobot order: checked episodes first, then the rejected one
 
 
 def _jids(ik):
@@ -42,20 +43,31 @@ def test_raw_outputs_consistent():
         assert ob[j + "|obj_T"].shape == (n, 4, 4) and np.all(np.isfinite(ob[j + "|obj_T"]))
         assert np.array_equal(ob[j + "|obj_holding"], ik[j + "|phase"] == 2)
         assert obm[j]["holding"] == g1.holding_runs(ob[j + "|obj_holding"])
-        holds = sorted((h["hand"], h["start"], h["end"]) for h in obm[j]["physics"]["holds"])
-        assert holds == sorted((h["hand"], h["start"], h["end"]) for h in obm[j]["holding"])
-        assert obm[j]["physics"]["all_held"] == all(h["verdict"] in ("held", "no_carry") for h in obm[j]["physics"]["holds"])
         for a in (ik[j + "|q"], ik[j + "|pelvis"]):
             assert np.all(np.isfinite(a))
 
 
 def test_tasks_follow_the_robot_holds():
     obm = json.load(open(RT + "_obj.json"))["episodes"]
-    assert g1.task_sentence(obm["J08320_left"]["dims"]["shape"], obm["J08320_left"]["holding"]) == (
-        "Pick up the box from the checkout counter with the left hand, pass it to the right hand, and put it down.")
-    assert g1.task_sentence(obm["J02771_right"]["dims"]["shape"], obm["J02771_right"]["holding"]) == (
+    assert g1.task_sentence(obm["J03826_left"]["dims"]["shape"], obm["J03826_left"]["holding"]) == (
+        "Pick up the bottle from the checkout counter with the left hand, pass it to the right hand, and put it down.")
+    assert g1.task_sentence(obm["J02562_right"]["dims"]["shape"], obm["J02562_right"]["holding"]) == (
         "Pick up the box from the checkout counter with the right hand and put it down.")
-    assert [obm[j]["task_kind"] for j in EPS] == ["one_hand", "pass"]
+    assert [obm[j]["task_kind"] for j in EPS] == ["one_hand", "one_hand", "pass"]
+
+def test_every_episode_is_released_with_its_check():
+    """The sample holds two episodes that pass the robot-side check and rejected ones, labelled with the rules they fail."""
+    obm = json.load(open(RT + "_obj.json"))["episodes"]
+    eps = [json.loads(line) for line in open(os.path.join(LR21, "meta", "episodes.jsonl"))]
+    assert [e["source_episode_id"] for e in eps] == ORDER
+    for e in eps:
+        c = obm[e["source_episode_id"]]["check"]
+        assert e["check_passed"] == c["passed"] == (not c["failed"]) and e["check_failed"] == c["failed"]
+    info = json.load(open(os.path.join(LR21, "meta", "info.json")))
+    n_ok = sum(e["check_passed"] for e in eps)
+    assert [e["check_passed"] for e in eps] == [True] * n_ok + [False] * (len(eps) - n_ok)      # checked episodes first
+    assert info["splits"]["rejected"] == f"{n_ok}:{len(eps)}"
+    assert info["features"]["observation.environment_state"]["names"][7:] == ["left_holding", "right_holding"]
 
 
 def test_lerobot_v21_matches_raw():
@@ -67,10 +79,10 @@ def test_lerobot_v21_matches_raw():
     obm = json.load(open(RT + "_obj.json"))["episodes"]
     h = json.load(open(RT + "_ik.json"))["counter_h"]
     eps = [json.loads(line) for line in open(os.path.join(LR21, "meta", "episodes.jsonl"))]
-    assert [e["source_episode_id"] for e in eps] == EPS
+    assert [e["source_episode_id"] for e in eps] == ORDER
     for e in eps:
         j = e["source_episode_id"]
-        assert e["physics_all_held"] == obm[j]["physics"]["all_held"]
+        assert "physics_all_held" not in e and "physics" not in obm[j]          # no physics results in this release
         t = pq.read_table(os.path.join(LR21, info["data_path"].format(episode_chunk=0, episode_index=e["episode_index"])))
         s = np.array(t.column("observation.state").to_pylist(), np.float32)
         a = np.array(t.column("action").to_pylist(), np.float32)
@@ -93,37 +105,32 @@ def test_lerobot_v30_matches_v21():
     t30 = pq.read_table(os.path.join(LR30, "data", "chunk-000", "file-000.parquet"))
     s30 = np.array(t30.column("observation.state").to_pylist(), np.float32)
     s21 = np.concatenate([np.array(pq.read_table(os.path.join(LR21, "data", "chunk-000", f"episode_{i:06d}.parquet"))
-                                   .column("observation.state").to_pylist(), np.float32) for i in range(2)])
+                                   .column("observation.state").to_pylist(), np.float32) for i in range(len(EPS))])
     assert np.array_equal(s30, s21)
     ep = pq.read_table(os.path.join(LR30, "meta", "episodes", "chunk-000", "file-000.parquet"))
-    assert ep.column("physics_all_held").to_pylist() == [True, True]
+    assert ep.column("check_passed").to_pylist() == [True, True, False] and "physics_all_held" not in ep.column_names
 
 
 def test_urdf_fk_reproduces_the_fingertips():
     """The joints and pelvis pose on the fetched URDF put the fingertip points where the raw outputs say."""
-    pin = pytest.importorskip("pinocchio")
     if not os.path.exists(g1.DEFAULT_URDF):
         pytest.skip("robot description not fetched (retarget/unitree_g1_dex3/fetch_robot.sh)")
-    m = g1.pin_model()
-    d = m.createData()
-    lo, hi = m.lowerPositionLimit[7:], m.upperPositionLimit[7:]
+    c = g1.chain()
+    lo, hi = (np.array([c.limits[n][k] for n in g1.JOINT_NAMES]) for k in (0, 1))
     ik = np.load(RT + "_ik.npz")
     worst = 0.0
     for j in EPS:
         q, p = ik[j + "|q"].astype(np.float64), ik[j + "|pelvis"].astype(np.float64)
         assert np.all(q >= lo - 1e-6) and np.all(q <= hi + 1e-6), j                     # within the URDF limits
         for t in range(0, len(q), 10):
-            pin.framesForwardKinematics(m, d, g1.pin_configuration(q[t], p[t]))
+            tips = g1.fingertips(q[t], p[t], c)
             for s in g1.SIDES:
-                tips = ik[f"{j}|{s}__tips"][t]
-                for k, f in enumerate(g1.FINGERS):
-                    worst = max(worst, float(np.abs(d.oMf[m.getFrameId(f"{s}_{f}_tip")].translation - tips[k]).max()))
+                worst = max(worst, float(np.abs(tips[s] - ik[f"{j}|{s}__tips"][t]).max()))
     assert worst < 1e-5, worst                                                           # float32 storage
 
 
 def test_mujoco_replay_matches_the_urdf():
     """The preview renderer's MuJoCo model (Unitree's MJCF) has the URDF's kinematics."""
-    pin = pytest.importorskip("pinocchio")
     pytest.importorskip("mujoco")
     if not os.path.exists(g1.DEFAULT_MJCF):
         pytest.skip("robot description not fetched (retarget/unitree_g1_dex3/fetch_robot.sh)")
@@ -132,8 +139,7 @@ def test_mujoco_replay_matches_the_urdf():
     meta = json.load(open(RT + "_ik.json"))
     h = meta["counter_h"]
     sc = G1Scene(meta["counter"], h, {})
-    m = g1.pin_model()
-    d = m.createData()
+    c = g1.chain()
     links = ["left_wrist_yaw_link", "right_wrist_yaw_link", "left_hand_thumb_2_link", "right_hand_index_1_link",
              "left_ankle_roll_link", "torso_link"]
     worst = 0.0
@@ -144,10 +150,10 @@ def test_mujoco_replay_matches_the_urdf():
             state[45] += h
             sc.set_robot(state)
             sc.forward()
-            pin.framesForwardKinematics(m, d, g1.pin_configuration(q[t], p[t]))
+            poses = g1.link_poses(q[t], p[t], c)
             for link in links:
-                T = d.oMf[m.getFrameId(link)]
+                T = poses[link]
                 b = sc.model.body(link).id
-                worst = max(worst, float(np.abs(sc.data.xpos[b] - T.translation - [0, 0, h]).max()),
-                            float(np.abs(sc.data.xmat[b].reshape(3, 3) - T.rotation).max()))
+                worst = max(worst, float(np.abs(sc.data.xpos[b] - T[:3, 3] - [0, 0, h]).max()),
+                            float(np.abs(sc.data.xmat[b].reshape(3, 3) - T[:3, :3]).max()))
     assert worst < 1e-4, worst                                                           # measured 1.5e-6

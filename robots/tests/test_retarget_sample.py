@@ -1,4 +1,4 @@
-"""Checks on the shipped samples: raw retargeting outputs and the LeRobot exports (2 episodes)."""
+"""Checks on the shipped samples: raw retargeting outputs and the LeRobot exports (3 episodes)."""
 import json
 import os
 
@@ -18,7 +18,8 @@ def test_retarget_outputs_consistent():
     hd = np.load(RT + "_hand.npz")
     ob = np.load(RT + "_obj.npz")
     jids = sorted(k.split("|")[0] for k in ik.files if k.endswith("|frames"))
-    assert jids == ["J02562_right", "J03826_left"]
+    assert jids == ["J00601_right", "J02562_right", "J03826_left"]
+    assert ob["J03826_left|obj_holding"].all(1).any()                # during the hand-over both hands hold
     for j in jids:
         n = len(ik[j + "|frames"])
         assert ik[j + "|q"].shape == (n, 14)
@@ -36,16 +37,16 @@ def test_retarget_outputs_consistent():
 
 def test_joint_limits_respected():
     from arcade_retarget.paths import DEFAULT_URDF
-    pin = pytest.importorskip("pinocchio")
+    from arcade_retarget.urdf_fk import Chain
     if not os.path.exists(DEFAULT_URDF):
         pytest.skip("robot description not fetched (retarget/robotis_ffw_sh5/fetch_robot.sh)")
-    m = pin.buildModelFromUrdf(DEFAULT_URDF)
+    limits = Chain(DEFAULT_URDF).limits
     ik = np.load(RT + "_ik.npz")
     for j in sorted(k.split("|")[0] for k in ik.files if k.endswith("|frames")):
         for c, name in enumerate(ik[j + "|joint_names"]):
-            iq = m.joints[m.getJointId(str(name))].idx_q
+            lo, hi = limits[str(name)]
             q = ik[j + "|q"][:, c]
-            assert q.min() >= m.lowerPositionLimit[iq] - 1e-4 and q.max() <= m.upperPositionLimit[iq] + 1e-4, (j, name)
+            assert q.min() >= lo - 1e-4 and q.max() <= hi + 1e-4, (j, name)
 
 
 def test_lerobot_v21_layout():
@@ -76,7 +77,7 @@ def test_lerobot_v30_matches_v21():
     t30 = pq.read_table(os.path.join(LR30, "data", "chunk-000", "file-000.parquet"))
     s30 = np.array(t30.column("observation.state").to_pylist(), np.float32)
     s21 = np.concatenate([np.array(pq.read_table(os.path.join(LR21, "data", "chunk-000", f"episode_{i:06d}.parquet"))
-                                   .column("observation.state").to_pylist(), np.float32) for i in range(2)])
+                                   .column("observation.state").to_pylist(), np.float32) for i in range(3)])
     assert np.array_equal(s30, s21)
 
 
@@ -87,34 +88,22 @@ def test_tasks_follow_the_events():
                                           "pass it to the right hand, and put it down.")
     assert task_of(obm["J02562_right"]) == "Pick up the box from the checkout counter with the right hand and put it down."
     tasks = [json.loads(l)["task"] for l in open(os.path.join(LR21, "meta", "tasks.jsonl"))]
-    assert sorted(tasks) == sorted(task_of(obm[j]) for j in obm)
+    assert sorted(tasks) == sorted({task_of(obm[j]) for j in obm})
 
 
-def test_solver_reproduces_sample(tmp_path):
-    """Re-run the solver on the sample's hand-over episode and compare with the released trajectory.
-
-    Needs the solver extra, the robot description (retarget/robotis_ffw_sh5/fetch_robot.sh) and the
-    ARCADE-Checkout-Human sample next to this repository (or ARCADE_HUMAN_RELEASE=/path).
-    """
-    import subprocess
-    import sys
-    from arcade_retarget.paths import DEFAULT_URDF
-    pytest.importorskip("pinocchio")
-    import scipy
-    if tuple(int(x) for x in scipy.__version__.split(".")[:2]) < (1, 16):
-        pytest.skip("the solver needs SciPy >= 1.16")
-    rel = os.environ.get("ARCADE_HUMAN_RELEASE", HUMAN_SAMPLE)
-    if not os.path.exists(os.path.join(rel, "meta", "info.json")) or not os.path.exists(DEFAULT_URDF):
-        pytest.skip("needs the ARCADE-Checkout-Human sample (or ARCADE_HUMAN_RELEASE) and the fetched robot description")
-    out = str(tmp_path / "ffw")
-    subprocess.run([sys.executable, "-m", "arcade_retarget.ffw_sh5", "--release", rel, "--out", out,
-                    "--episodes", "J03826_left", "--workers", "1"], check=True)
-    a, b = np.load(RT + "_ik.npz"), np.load(out + "_ik.npz")
-    j = "J03826_left"
-    assert a[j + "|q"].shape == b[j + "|q"].shape
-    assert np.abs(a[j + "|q"] - b[j + "|q"]).max() < 0.05          # rad (measured 0.0004)
-    ea, eb = a[j + "|right__err"][:, 0], b[j + "|right__err"][:, 0]
-    assert abs(np.median(ea) - np.median(eb)) < 1.0                  # mm
+def test_every_episode_is_released_with_its_check():
+    """The sample holds two episodes that pass the robot-side check and rejected ones, labelled with the rules they fail."""
+    obm = json.load(open(RT + "_obj.json"))["episodes"]
+    eps = [json.loads(line) for line in open(os.path.join(LR21, "meta", "episodes.jsonl"))]
+    assert [e["source_episode_id"] for e in eps] == ["J02562_right", "J03826_left", "J00601_right"]
+    for e in eps:
+        c = obm[e["source_episode_id"]]["check"]
+        assert e["check_passed"] == c["passed"] == (not c["failed"]) and e["check_failed"] == c["failed"]
+    info = json.load(open(os.path.join(LR21, "meta", "info.json")))
+    n_ok = sum(e["check_passed"] for e in eps)
+    assert [e["check_passed"] for e in eps] == [True] * n_ok + [False] * (len(eps) - n_ok)      # checked episodes first
+    assert info["splits"]["rejected"] == f"{n_ok}:{len(eps)}"
+    assert info["features"]["observation.environment_state"]["names"][7:] == ["left_holding", "right_holding"]
 
 
 def test_export_without_release_warns_and_puts_all_in_train(tmp_path):

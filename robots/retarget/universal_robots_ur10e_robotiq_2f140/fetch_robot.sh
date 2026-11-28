@@ -4,7 +4,7 @@
 #   UR10e:  https://github.com/UniversalRobots/Universal_Robots_ROS2_Description (BSD-3-Clause)
 #   2F-140: https://github.com/ros-industrial-attic/robotiq, robotiq_2f_140_gripper_visualization (BSD-2-Clause)
 #
-#   bash retarget/universal_robots_ur10e_robotiq_2f140/fetch_robot.sh [DEST]      (default: retarget/universal_robots_ur10e_robotiq_2f140/upstream, about 30 MB)
+#   bash retarget/universal_robots_ur10e_robotiq_2f140/fetch_robot.sh [DEST]      (default: retarget/universal_robots_ur10e_robotiq_2f140/upstream, about 18 MB)
 #
 # The URDF step needs Python with arcade_retarget and xacro installed (pip install -e ".[robot]").
 # Mesh paths in the URDF are package://ur_description/... and package://robotiq_2f_140_gripper_visualization/...;

@@ -61,8 +61,8 @@
                 "product_qy",
                 "product_qz",
                 "product_qw",
-                "left_carrying",
-                "right_carrying"
+                "left_holding",
+                "right_holding"
             ],
             "fps": 20
         },
@@ -123,9 +123,9 @@
             "fps": 20
         }
     },
-    "total_episodes": 2,
-    "total_frames": 1504,
-    "total_tasks": 2,
+    "total_episodes": 3,
+    "total_frames": 2929,
+    "total_tasks": 3,
     "chunks_size": 1000,
     "data_files_size_in_mb": 100,
     "video_files_size_in_mb": 200,
@@ -133,6 +133,7 @@
     "video_path": null,
     "robot_type": "ur10e_2f140_dual",
     "splits": {
-        "train": "0:2"
+        "train": "0:1",
+        "rejected": "1:3"
     }
 }

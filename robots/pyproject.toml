@@ -4,21 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "arcade-retarget"
-version = "1.0.0"
-description = "ARCADE-Checkout human demonstrations retargeted to robots (ROBOTIS FFW-SH5, two UR10e + Robotiq 2F-140, Unitree G1 + Dex3-1): LeRobot export, retargeting solver, renderer"
+version = "1.1.0"
+description = "ARCADE-Checkout human demonstrations retargeted to robots (ROBOTIS FFW-SH5, two UR10e + Robotiq 2F-140, Unitree G1 + Dex3-1): LeRobot export, robot description fetchers, renderer"
 readme = "README.md"
 license = "CC-BY-NC-4.0"
 license-files = ["LICENSE", "THIRD_PARTY_LICENSES.md", "licenses/*.txt"]
 requires-python = ">=3.10"
 dependencies = [
-  "arcade-human>=1.0.0",   # ../human in this repository
+  "arcade-human>=1.1.0",   # ../human in this repository
   "numpy>=1.24",
   "scipy>=1.10",
   "pyarrow>=14",
 ]
 
 [project.optional-dependencies]
-solver = ["pin>=4.1,<5", "pin-pink>=4.3,<5", "qpsolvers>=4.0", "quadprog>=0.1.12", "scipy>=1.16"]   # SciPy 1.16 needs Python >= 3.11
 render = ["mujoco>=3.3.3", "pillow>=10"]
 robot = ["xacro>=2"]   # builds the UR10e + 2F-140 URDF from the upstream xacro files
 viz = ["matplotlib>=3.5"]

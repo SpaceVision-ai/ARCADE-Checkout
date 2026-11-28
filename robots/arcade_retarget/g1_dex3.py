@@ -4,11 +4,11 @@ The robot description is Unitree's ``g1_29dof_with_hand_rev_1_0`` from ``unitree
 (BSD-3-Clause), fetched by ``retarget/unitree_g1_dex3/fetch_robot.sh``; it is not redistributed here. Joint names in the
 data are the URDF joint names. The pelvis is a free-floating base: its pose is stored next to the joints.
 
-Kinematics with Pinocchio (``pip install pin``)::
+Forward kinematics of the released states on the fetched URDF::
 
     from arcade_retarget import g1_dex3 as g1
-    model = g1.pin_model()                      # free-flyer G1 + the fingertip frames used by the retargeting
-    q = g1.pin_configuration(state)             # 50-D dataset state -> Pinocchio configuration
+    poses = g1.link_poses(state)                # 50-D dataset state -> {link: 4x4 pose}
+    tips = g1.fingertips(state)                 # {hand: (3, 3) thumb, index and middle fingertip points}
 """
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ ARM = ["shoulder_pitch_joint", "shoulder_roll_joint", "shoulder_yaw_joint", "elb
        "wrist_roll_joint", "wrist_pitch_joint", "wrist_yaw_joint"]
 HAND = ["hand_index_0_joint", "hand_index_1_joint", "hand_middle_0_joint", "hand_middle_1_joint",
         "hand_thumb_0_joint", "hand_thumb_1_joint", "hand_thumb_2_joint"]
-#: the 43 joints in URDF (Pinocchio) order: legs, waist, left arm and hand, right arm and hand
+#: the 43 joints in URDF order: legs, waist, left arm and hand, right arm and hand
 JOINT_NAMES = ([f"left_{j}" for j in LEG] + [f"right_{j}" for j in LEG] + WAIST
                + [f"left_{j}" for j in ARM + HAND] + [f"right_{j}" for j in ARM + HAND])
 #: pelvis pose: position (m) and orientation quaternion (x, y, z, w)
@@ -58,28 +58,29 @@ def tip_offset(side: str, finger: str) -> np.ndarray:
     return np.array([TIP_OFFSET, 0.0, 0.0])
 
 
-def pin_model(urdf: str = DEFAULT_URDF):
-    """Pinocchio model of the G1 with a free-flyer pelvis and frames ``<side>_<finger>_tip``."""
-    import pinocchio as pin
+def chain(urdf: str = DEFAULT_URDF):
+    """Joint tree of the fetched URDF (``arcade_retarget.urdf_fk.Chain``)."""
+    from .urdf_fk import Chain
     if not os.path.exists(urdf):
         raise SystemExit(f"robot description not found ({urdf}): run bash retarget/unitree_g1_dex3/fetch_robot.sh")
-    m = pin.buildModelFromUrdf(urdf, pin.JointModelFreeFlyer())
-    for side in SIDES:
-        for finger, link in TIP_LINK.items():
-            fid = m.getFrameId(f"{side}_{link}")
-            fr = m.frames[fid]
-            m.addFrame(pin.Frame(f"{side}_{finger}_tip", fr.parentJoint, fid,
-                                 fr.placement * pin.SE3(np.eye(3), tip_offset(side, finger)), pin.FrameType.OP_FRAME))
-    return m
+    return Chain(urdf)
 
 
-def pin_configuration(joints: np.ndarray, pelvis: Optional[np.ndarray] = None) -> np.ndarray:
-    """Pinocchio configuration (50,) from the 43 joints and the pelvis pose [x y z qx qy qz qw],
-    or from one 50-D dataset state (joints, then pelvis)."""
+def link_poses(joints: np.ndarray, pelvis: Optional[np.ndarray] = None, urdf_chain=None) -> Dict[str, np.ndarray]:
+    """{link: 4x4 pose} from the 43 joints and the pelvis pose [x y z qx qy qz qw], or from one 50-D dataset
+    state (joints, then pelvis). The poses are in the frame the pelvis pose is given in."""
+    from .urdf_fk import pose_matrix
     x = np.asarray(joints, dtype=np.float64)
     if pelvis is None:
         x, pelvis = x[:43], x[43:50]
-    return np.concatenate([np.asarray(pelvis, dtype=np.float64), x])
+    return (urdf_chain or chain()).link_poses(dict(zip(JOINT_NAMES, x)), pose_matrix(pelvis[:3], pelvis[3:7]))
+
+
+def fingertips(joints: np.ndarray, pelvis: Optional[np.ndarray] = None, urdf_chain=None) -> Dict[str, np.ndarray]:
+    """{hand: (3, 3)} thumb, index and middle fingertip points of one state (see ``link_poses``)."""
+    T = link_poses(joints, pelvis, urdf_chain)
+    return {s: np.stack([T[f"{s}_{TIP_LINK[f]}"][:3, :3] @ tip_offset(s, f) + T[f"{s}_{TIP_LINK[f]}"][:3, 3] for f in FINGERS])
+            for s in SIDES}
 
 
 # --- holds and tasks ---------------------------------------------------------------------------------------

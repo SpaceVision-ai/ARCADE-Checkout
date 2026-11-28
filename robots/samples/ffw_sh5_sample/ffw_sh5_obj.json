@@ -1,22 +1,21 @@
 {
  "kind": "ARCADE FFW-SH5 product trajectory (output steps)",
- "attach": true,
  "ik": "ffw_sh5_ik.npz",
  "release": {
   "name": "ARCADE-Checkout-Human",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "session": "capture_20260818_01"
  },
  "episodes": {
-  "J02562_right": {
+  "J00601_right": {
    "dims": {
     "shape": "box",
     "l": 0.165,
     "w": 0.089,
     "h": 0.025
    },
-   "product": "pepero_white",
-   "mesh": "objects/pepero_white/pepero_white_p102.obj",
+   "product": "box_flat",
+   "mesh": "objects/box_flat/box_flat_p102.obj",
    "mesh_perm": [
     1,
     0,
@@ -25,27 +24,91 @@
    "holding": [
     {
      "hand": "right",
+     "start": 64,
+     "end": 219
+    }
+   ],
+   "carrying": [
+    {
+     "hand": "right",
+     "start": 65,
+     "end": 205
+    }
+   ],
+   "counter": {
+    "center": [
+     -0.24700000000000003,
+     -0.14949999999999997
+    ],
+    "size": [
+     0.6080000000000001,
+     1.381
+    ],
+    "yaw": 0.0
+   },
+   "track": {
+    "hold_dev_p50_mm": 0.1,
+    "hold_dev_p90_mm": 3.7,
+    "hold_dev_max_mm": 42.2,
+    "hold_rot_max_deg": 5.4,
+    "place_dev_mm": 36.0
+   },
+   "check": {
+    "passed": false,
+    "failed": [
+     "idle_hand"
+    ]
+   }
+  },
+  "J02562_right": {
+   "dims": {
+    "shape": "box",
+    "l": 0.165,
+    "w": 0.089,
+    "h": 0.025
+   },
+   "product": "box_flat",
+   "mesh": "objects/box_flat/box_flat_p102.obj",
+   "mesh_perm": [
+    1,
+    0,
+    2
+   ],
+   "holding": [
+    {
+     "hand": "right",
+     "start": 62,
+     "end": 166
+    }
+   ],
+   "carrying": [
+    {
+     "hand": "right",
      "start": 68,
      "end": 166
     }
    ],
    "counter": {
     "center": [
-     -0.24698256939649582,
-     -0.14922206103801727
+     -0.24700000000000003,
+     -0.14949999999999997
     ],
     "size": [
-     0.6080575662851334,
-     1.381048103570938
+     0.6080000000000001,
+     1.381
     ],
     "yaw": 0.0
    },
    "track": {
     "hold_dev_p50_mm": 0.0,
-    "hold_dev_p90_mm": 0.2,
-    "hold_dev_max_mm": 14.9,
-    "hold_rot_max_deg": 5.1,
-    "place_dev_mm": 0.2
+    "hold_dev_p90_mm": 8.7,
+    "hold_dev_max_mm": 54.1,
+    "hold_rot_max_deg": 9.4,
+    "place_dev_mm": 0.1
+   },
+   "check": {
+    "passed": true,
+    "failed": []
    }
   },
   "J03826_left": {
@@ -54,8 +117,8 @@
     "r": 0.037431,
     "h": 0.209882
    },
-   "product": "mesil",
-   "mesh": "objects/mesil/mesil_p201.obj",
+   "product": "bottle_c",
+   "mesh": "objects/bottle_c/bottle_c_p201.obj",
    "mesh_perm": [
     2,
     0,
@@ -64,32 +127,48 @@
    "holding": [
     {
      "hand": "left",
-     "start": 70,
-     "end": 139
+     "start": 69,
+     "end": 160
     },
     {
      "hand": "right",
-     "start": 139,
-     "end": 156
+     "start": 84,
+     "end": 195
+    }
+   ],
+   "carrying": [
+    {
+     "hand": "left",
+     "start": 70,
+     "end": 146
+    },
+    {
+     "hand": "right",
+     "start": 146,
+     "end": 197
     }
    ],
    "counter": {
     "center": [
-     -0.24698256939649582,
-     -0.14922206103801727
+     -0.24700000000000003,
+     -0.14949999999999997
     ],
     "size": [
-     0.6080575662851334,
-     1.381048103570938
+     0.6080000000000001,
+     1.381
     ],
     "yaw": 0.0
    },
    "track": {
     "hold_dev_p50_mm": 0.0,
-    "hold_dev_p90_mm": 0.1,
+    "hold_dev_p90_mm": 0.2,
     "hold_dev_max_mm": 10.0,
     "hold_rot_max_deg": 1.5,
-    "place_dev_mm": 0.0
+    "place_dev_mm": 0.5
+   },
+   "check": {
+    "passed": true,
+    "failed": []
    }
   }
  }

@@ -1,15 +1,16 @@
 {
     "codebase_version": "v2.1",
     "robot_type": "ffw_sh5_rev1",
-    "total_episodes": 2,
-    "total_frames": 433,
+    "total_episodes": 3,
+    "total_frames": 847,
     "total_tasks": 2,
     "total_videos": 0,
     "total_chunks": 1,
     "chunks_size": 1000,
     "fps": 20,
     "splits": {
-        "train": "0:2"
+        "train": "0:2",
+        "rejected": "2:3"
     },
     "data_path": "data/chunk-{episode_chunk:03d}/episode_{episode_index:06d}.parquet",
     "video_path": null,
@@ -163,8 +164,8 @@
                 "product_qy",
                 "product_qz",
                 "product_qw",
-                "left_carrying",
-                "right_carrying"
+                "left_holding",
+                "right_holding"
             ]
         },
         "source_frame": {

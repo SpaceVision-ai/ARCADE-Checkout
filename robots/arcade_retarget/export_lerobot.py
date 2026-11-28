@@ -1,8 +1,8 @@
 """Retargeting outputs (FFW-SH5, two UR10e + 2F-140 or Unitree G1 + Dex3-1) -> LeRobot dataset (codebase v2.1, state-only).
 
-  python -m arcade_retarget.export_lerobot --retarget build/ffw_sh5 --release ARCADE_HUMAN --out build/lerobot_ffw_sh5
-  python -m arcade_retarget.export_lerobot --retarget build/ur10e_2f140 --release ARCADE_HUMAN --out build/lerobot_ur10e_2f140
-  python -m arcade_retarget.export_lerobot --retarget build/g1_dex3 --release ARCADE_HUMAN --out build/lerobot_g1_dex3
+  python -m arcade_retarget.export_lerobot --retarget samples/ffw_sh5_sample/ffw_sh5 --release ARCADE_HUMAN --out build/lerobot_ffw_sh5
+  python -m arcade_retarget.export_lerobot --retarget samples/ur10e_2f140_sample/ur10e_2f140 --release ARCADE_HUMAN --out build/lerobot_ur10e_2f140
+  python -m arcade_retarget.export_lerobot --retarget samples/g1_dex3_sample/g1_dex3 --release ARCADE_HUMAN --out build/lerobot_g1_dex3
 
 The robot is read from PREFIX_ik.json ("robot"; files without it are FFW-SH5).
 
@@ -18,8 +18,8 @@ and are stamped at a nominal 20 Hz because LeRobot needs an integer rate):
                                 float32[50]  G1: 43 joints (legs, waist, arms, Dex3-1 hands) + pelvis pose [x,y,z,qx,qy,qz,qw]
   action                        same size    joint position target = next step's position
                                              (the last step holds its position)
-  observation.environment_state float32[9]   product pose [x,y,z,qx,qy,qz,qw] + which hand carries it (left, right);
-                                             UR10e, G1: which gripper / hand holds it (both during a hand-over)
+  observation.environment_state float32[9]   product pose [x,y,z,qx,qy,qz,qw] + which robot hand, arm or gripper holds it (left, right);
+                                             both are 1 during a hand-over
   source_frame                  float32[1]   the ARCADE-Checkout-Human session frame this step shows (fractional
                                              where the robot was slowed down); links to the human data
   timestamp, frame_index, episode_index, index, task_index, next.done
@@ -57,7 +57,7 @@ LIFT = ["lift_joint"]             # held at its neutral position (0) by the reta
 BASE = ["base_x", "base_y", "base_yaw"]
 STATE_NAMES = ARM + FINGERS + HEAD + LIFT + BASE
 ENV_NAMES = ["product_x", "product_y", "product_z", "product_qx", "product_qy", "product_qz", "product_qw",
-             "left_carrying", "right_carrying"]
+             "left_holding", "right_holding"]   # 1 while that hand, arm or gripper of the robot holds the product (both during a hand-over)
 FPS = 20                          # nominal LeRobot rate (integer); the capture runs at 19.94 Hz
 ROBOT_TYPE = "ffw_sh5_rev1"       # ROBOTIS naming (URDF ffw_sh5_rev1_follower)
 GROUPS = (("left_arm", 7), ("right_arm", 7), ("left_hand", 20), ("right_hand", 20), ("head", 2), ("lift", 1), ("base", 3))
@@ -118,6 +118,10 @@ def export(retarget_prefix: str, out: str, episodes: List[str] = None, overwrite
     jids = sorted(k.split("|")[0] for k in ik.files if k.endswith("|frames"))
     jids = [j for j in jids if j in ob_meta["episodes"] and (not episodes or j in episodes)]
 
+    def passed(j):                                   # the robot-side check; files without it count as passed
+        return bool(ob_meta["episodes"][j].get("check", {}).get("passed", True))
+    jids = [j for j in jids if passed(j)] + [j for j in jids if not passed(j)]   # checked episodes first, then the rejected ones
+
     if os.path.exists(out):
         if not overwrite:
             raise SystemExit(f"{out} exists (use --overwrite)")
@@ -164,7 +168,7 @@ def export(retarget_prefix: str, out: str, episodes: List[str] = None, overwrite
         pos = T[:, :3, 3] + np.array([0.0, 0.0, counter_h])
         hold = np.zeros((n, 2), np.float32)
         epm = ob_meta["episodes"][jid]
-        if is_ur or is_g1:                                                         # grippers / hands holding the product
+        if jid + "|obj_holding" in ob.files:                                       # hands / grippers holding the product
             hold[:] = ob[jid + "|obj_holding"]
         elif jid + "|obj_carrier" in ob.files:                                    # the hand the product rides with
             car = ob[jid + "|obj_carrier"]
@@ -202,8 +206,9 @@ def export(retarget_prefix: str, out: str, episodes: List[str] = None, overwrite
 
         ep_rows.append(dict(episode_index=ei, tasks=[task], length=n, source_episode_id=jid,
                             product=epm["product"], source_frames=[int(ik[jid + "|frames"][0]), int(ik[jid + "|frames"][-1])]))
-        if is_g1:                                                                  # the physics replay kept the product in every hold
-            ep_rows[-1]["physics_all_held"] = bool(epm["physics"]["all_held"])
+        chk = epm.get("check")
+        if chk is not None:                                                        # robot-side check: every episode is released, labelled
+            ep_rows[-1].update(check_passed=bool(chk["passed"]), check_failed=list(chk["failed"]))
         stat_rows.append(dict(episode_index=ei, stats={
             "observation.state": _stats(state), "action": _stats(action), "observation.environment_state": _stats(env),
             "source_frame": _stats(src), "timestamp": _stats(ts), "frame_index": _stats(np.arange(n)), "episode_index": _stats(np.full(n, ei)),
@@ -235,15 +240,17 @@ def export(retarget_prefix: str, out: str, episodes: List[str] = None, overwrite
         from arcade_human.splits import time_split
         idx = {r["source_episode_id"]: r["episode_index"] for r in ep_rows}
         ts_ = time_split(ArcadeHuman(release))
-        split_lists = {k: sorted(idx[e] for e in v if e in idx) for k, v in ts_.items()}
-        if not any(split_lists.values()):
+        ok = {r["source_episode_id"] for r in ep_rows if r.get("check_passed", True)}
+        split_lists = {k: sorted(idx[e] for e in v if e in idx and e in ok) for k, v in ts_.items() if k != "rejected"}
+        split_lists["rejected"] = sorted(r["episode_index"] for r in ep_rows if not r.get("check_passed", True))
+        if not any(v for k, v in split_lists.items() if k != "rejected"):
             warnings.warn("none of the exported episodes is in the --release given: every episode goes to the "
                           "'train' split and meta/splits.json is not written. Pass the full ARCADE-Checkout-Human release.",
                           stacklevel=2)
             split_lists = None
         else:
             splits = {}
-            for k in ("train", "val", "test"):
+            for k in ("train", "val", "test", "rejected"):
                 v = split_lists.get(k, [])
                 if v:
                     assert v == list(range(v[0], v[-1] + 1)), f"{k} split is not contiguous"
@@ -278,13 +285,14 @@ def export(retarget_prefix: str, out: str, episodes: List[str] = None, overwrite
         o += k
     state = dict(groups)
     state["product_pose"] = dict(original_key="observation.environment_state", start=0, end=7)
-    state["carrying"] = dict(original_key="observation.environment_state", start=7, end=9)
+    state["holding"] = dict(original_key="observation.environment_state", start=7, end=9)
     json.dump(dict(state=state, action=groups,
                    annotation={"human.task_description": dict(original_key="task_index")}),
               open(os.path.join(out, "meta", "modality.json"), "w"), indent=1)
     if split_lists is not None:
         json.dump(dict(split_lists, note="time blocks of arcade_human.splits.time_split: no session frame is shared "
-                                         "between train, val and test; boundary episodes belong to none of them"),
+                                         "between train, val and test; boundary episodes belong to none of them; "
+                                         "rejected = episodes that fail the robot-side check (meta/episodes: check_failed)"),
                   open(os.path.join(out, "meta", "splits.json"), "w"), indent=1)
     from arcade_retarget import __version__
     prov = dict(source=f"ARCADE {ROBOT_NAMES[robot]} retargeting",
@@ -297,7 +305,7 @@ def export(retarget_prefix: str, out: str, episodes: List[str] = None, overwrite
         prov.update(bases=ik_meta.get("bases"), mount=ik_meta.get("mount"))
     if is_g1:
         prov.update(pelvis="observation.state 43-49: pelvis position (robot world) and orientation quaternion xyzw",
-                    physics=ik_meta.get("physics"))
+                    stand=ik_meta.get("stand"))
     json.dump(prov, open(os.path.join(out, "meta", "arcade.json"), "w"), indent=1)
     print(f"LeRobot {CODEBASE_VERSION}: {len(ep_rows)} episodes, {index0} frames, {len(tasks)} tasks -> {out}")
     return info
@@ -305,7 +313,7 @@ def export(retarget_prefix: str, out: str, episodes: List[str] = None, overwrite
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--retarget", required=True, help="retarget output prefix (as given to --out of the retargeting)")
+    ap.add_argument("--retarget", required=True, help="prefix of the raw retargeting outputs, e.g. samples/ffw_sh5_sample/ffw_sh5")
     ap.add_argument("--out", required=True)
     ap.add_argument("--episodes", default="")
     ap.add_argument("--overwrite", action="store_true")
