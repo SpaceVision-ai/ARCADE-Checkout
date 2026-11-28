@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import Dict, Tuple
 
 SCHEMA_NAME = "arcade_human"
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"
 #: per-episode archive of the segmentation masks: <view>/<track_id>/<frame>.png, stored uncompressed
 MASKS_ZIP = "masks.zip"
 
@@ -146,8 +146,25 @@ EPISODE_ATTRS: Tuple[str, ...] = (
     "episode_id", "episode_index", "session_id", "fps", "n_frames",
     "source_frame_range", "core_window", "product", "product_shape", "product_dims",
     "product_mesh", "hands", "task_kind", "first_grasp_hand", "last_release_hand",
-    "recognition", "n_scan_events",
+    "recognition", "n_scan_events", "check_passed", "check_failed",
 )
+
+#: the automatic quality check of the 3-D reconstruction: rule id -> what makes an episode fail it.
+#: Every episode is released; ``check_passed`` is true when ``check_failed`` (the failed rule ids) is empty.
+CHECK_RULES: Dict[str, str] = {
+    "product_below_counter": "the product is below the counter top",
+    "product_floating": "a resting product is not on the counter, or a carried product is away from the carrying hand",
+    "resting_product_moves": "a resting product moves, tilts, stands upside down or is not on a stable face",
+    "product_leaves_hand": "the carried product leaves the palm of the carrying hand",
+    "product_slips_in_hand": "the carried product jumps in the hand from one frame to the next",
+    "hand_product_gap": "a gap between hand and product at a grasp or a release",
+    "product_jumps": "the product jumps between frames",
+    "hand_in_product": "the hand is inside the product while carrying it",
+    "product_pose_missing": "the product pose is unknown in too many frames",
+    "product_vs_masks": "the posed product disagrees with its camera masks over the episode or over a run of frames",
+    "held_product_vs_masks": "while carried well above the counter, the posed product disagrees with its camera masks",
+    "held_product_axis": "while carried well above the counter, the long axis of the posed product disagrees with its masks",
+}
 
 #: release directory layout, relative to the release root
 RELEASE_FILES: Dict[str, str] = {

@@ -22,8 +22,20 @@ def test_sample_validates():
     assert warns == []
 
 
+def test_check_labels(ds):
+    """Every episode is released; the quality check labels the ones that fail and why."""
+    assert ds.passed_ids == ["J00601_right", "J02562_right", "J03826_left"] and ds.info["n_episodes_passed"] == 3
+    bad = ds.load("J06564_right")
+    assert not bad.check_passed and bad.check_failed == ["held_product_vs_masks", "product_vs_masks"]
+    assert set(bad.check_failed) <= set(S.CHECK_RULES) and set(ds.info["check_rules"]) == set(S.CHECK_RULES)
+    for eid in ds.passed_ids:
+        assert ds.load(eid).check_passed and ds.load(eid).check_failed == []
+    from arcade_human.splits import time_split
+    assert time_split(ds)["rejected"] == ["J06564_right"]
+
+
 def test_index_matches_hdf5(ds):
-    assert len(ds) == ds.info["n_episodes"] == 2
+    assert len(ds) == ds.info["n_episodes"] == 4
     for ep in ds:
         assert len(ep) == ds.row(ep.episode_id)["n_frames"]
         for path, (spec, _) in S.EPISODE_LAYOUT.items():
@@ -159,15 +171,15 @@ def test_time_split_has_no_frame_leakage(ds):
 def test_product_split_drops_overlapping_episodes(ds):
     from arcade_human.splits import product_split
     rng = {r["episode_id"]: r["source_frame_range"] for r in ds.index}
-    s = product_split(ds, "mesil")
+    s = product_split(ds, "bottle_c")
     frames = {k: {f for e in s[k] for f in range(rng[e][0], rng[e][1] + 1)} for k in ("train", "test")}
     assert s["test"] == ["J03826_left"] and not (frames["train"] & frames["test"])
-    assert sorted(s["train"] + s["test"] + s["dropped"]) == sorted(ds.episode_ids)
+    assert sorted(s["train"] + s["test"] + s["dropped"]) == sorted(ds.passed_ids) and s["rejected"] == ["J06564_right"]
 
 
 def test_baked_mesh_is_named(ds):
     head = open(os.path.join(SAMPLE, ds.load("J03826_left").attrs["product_mesh"])).read(400)
-    assert "o mesil" in head and "tmp" not in head
+    assert "o bottle_c" in head and "tmp" not in head
 
 
 def test_core_handling_ignores_context_and_flags_repeats():

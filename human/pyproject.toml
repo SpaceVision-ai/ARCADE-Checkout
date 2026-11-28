@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "arcade-human"
-version = "1.0.0"
+version = "1.1.0"
 description = "Reader, validator and tools for ARCADE-Checkout-Human: 3-D hand-object demonstrations at a self-checkout counter"
 readme = "README.md"
 license = "CC-BY-NC-4.0"

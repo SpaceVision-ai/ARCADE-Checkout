@@ -1,6 +1,6 @@
 {
  "products": {
-  "mesil": {
+  "bottle_c": {
    "shape": "cylinder",
    "dims_median_m": {
     "h": 0.2099,
@@ -9,24 +9,27 @@
    "n_episodes": 1,
    "meshes": {
     "201": {
-     "path": "objects/mesil/mesil_p201.obj"
+     "path": "objects/bottle_c/bottle_c_p201.obj"
     }
    },
    "mass_kg": null,
    "friction": null,
    "note": "dims are measured per episode (see episode attrs); mass and friction were not measured"
   },
-  "pepero_white": {
+  "box_flat": {
    "shape": "box",
    "dims_median_m": {
     "h": 0.025,
     "l": 0.165,
     "w": 0.089
    },
-   "n_episodes": 1,
+   "n_episodes": 3,
    "meshes": {
     "102": {
-     "path": "objects/pepero_white/pepero_white_p102.obj"
+     "path": "objects/box_flat/box_flat_p102.obj"
+    },
+    "120": {
+     "path": "objects/box_flat/box_flat_p120.obj"
     }
    },
    "mass_kg": null,

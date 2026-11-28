@@ -32,7 +32,7 @@ COUNTER_HEIGHT = 0.80          # display height of the counter top above the flo
 SUPERSAMPLE = 2                # render at 2x and downsample (crisp edges)
 #: counter-top footprint of the capture counter in the counter frame (m), covering every resting product
 #: pose of the full release. Renders of any subset (such as the in-repo sample) use it, so they match.
-CAPTURE_COUNTER = dict(x0=-0.54, x1=0.01, y0=-0.81, y1=0.57)
+CAPTURE_COUNTER = dict(x0=-0.551, x1=0.057, y0=-0.840, y1=0.541)
 #: the footprint is inferred (a box around the resting products), so it overlaps where the shopper
 #: stands; renders cut this recess into the counter in front of the shopper. No product rests in it.
 CAPTURE_RECESS = dict(x=-0.38, half_width=0.20)
@@ -164,19 +164,6 @@ def add_products(spec, meshes: Dict[str, str]) -> Dict[str, str]:
             g.rgba = [0.35, 0.65, 0.4, 1.0]
         bodies[key] = b.name
     return bodies
-
-
-def counter_extent(ds: ArcadeHuman, pad: Tuple[float, float, float] = (0.03, 0.15, 0.10)) -> Dict[str, float]:
-    """Counter footprint (counter frame) from the resting product positions of the episodes in `ds`."""
-    X0, X1, Y0, Y1 = [], [], [], []
-    for eid in ds.episode_ids:
-        ep = ds.load(eid)
-        st, ok = ep["object/state"], ep["object/valid"]
-        P = ep.object_pose[ok & ((st == 0) | (st == 3)), :3]
-        if len(P):
-            X0.append(P[:, 0].min()); X1.append(P[:, 0].max()); Y0.append(P[:, 1].min()); Y1.append(P[:, 1].max())
-    return dict(x0=float(min(X0)) - pad[0], x1=float(max(X1)) + pad[1], y0=float(min(Y0)) - pad[2],
-                y1=float(max(Y1)) + pad[2])
 
 
 def set_mocap(model, data, body: str, T: np.ndarray):
@@ -524,7 +511,7 @@ def render_grid(root: str, episodes: List[str], out: str, cols: int = 3, tile: T
 
 
 #: yaw (deg) that turns each product's printed front towards the camera in the product gallery
-PRODUCT_YAW = {"sangaria_oolong": 180.0}
+PRODUCT_YAW = {"bottle_b": 180.0}
 
 
 def render_products(root: str, out: str, tile: int = 400) -> str:

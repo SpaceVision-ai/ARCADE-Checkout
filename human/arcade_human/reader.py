@@ -137,6 +137,16 @@ class Episode:
         return self.attrs["product"]
 
     @property
+    def check_passed(self) -> bool:
+        """The episode passes the automatic quality check (``schema.CHECK_RULES``)."""
+        return bool(self.attrs.get("check_passed", True))
+
+    @property
+    def check_failed(self) -> List[str]:
+        """Rule ids of the quality check the episode fails (empty when it passes)."""
+        return list(self.attrs.get("check_failed") or [])
+
+    @property
     def product_mesh_path(self) -> str:
         return os.path.join(self.root, self.attrs["product_mesh"])
 
@@ -178,6 +188,11 @@ class ArcadeHuman:
     @property
     def episode_ids(self) -> List[str]:
         return [r["episode_id"] for r in self.index]
+
+    @property
+    def passed_ids(self) -> List[str]:
+        """Episodes that pass the automatic quality check (``check_passed``)."""
+        return [r["episode_id"] for r in self.index if r.get("check_passed", True)]
 
     def row(self, episode_id: str) -> Dict:
         return self._by_id[episode_id]

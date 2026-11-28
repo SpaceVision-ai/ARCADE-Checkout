@@ -18,20 +18,27 @@ attached to the self-checkout counter:
 * Rotations are quaternions in `xyzw` order (scalar last). A pose vector is
   `[x, y, z, qx, qy, qz, qw]`.
 
-Sanity values from the release:
+Sanity values from the sample episodes:
 
 | quantity | typical value |
 |---|---|
-| shoulder midpoint (median) | `x ≈ -0.49`, `z ≈ 0.71` (the shopper stands at `x < 0` and reaches forward) |
+| shoulder midpoint (median) | `x ≈ -0.5`, `z ≈ 0.7` (the shopper stands at `x < 0` and reaches forward) |
 | left shoulder minus right shoulder | `Δy ≈ +0.39` |
-| resting products, 1st to 99th percentile | `x ∈ [-0.52, -0.10]`, `y ∈ [-0.69, 0.41]` |
 
 The frame was fixed once for the capture rig. It was derived from the multi-view camera
-calibration and refined so that resting products sit on `z = 0`.
+calibration and refined so that resting products sit on `z = 0`. The camera intrinsics and
+extrinsics are not released.
 
-Renders and the robot solver use a box around all resting product positions as the counter
-(`arcade_human.render.CAPTURE_COUNTER`, about `x ∈ [-0.54, 0.01]`, `y ∈ [-0.81, 0.57]`). The
-shopper's hips are just inside its near edge, so renders cut a recess there.
+### Counter footprint
+
+The counter top is the rectangle `x ∈ [-0.551, 0.057]`, `y ∈ [-0.840, 0.541]` (m) at `z = 0`:
+a box around every resting product position of the session. It is recorded in
+`meta/info.json -> counter` (`x0`, `x1`, `y0`, `y1`, `top_z`), and the robot datasets record the
+same footprint.
+
+Renders use it as the counter (`arcade_human.render.CAPTURE_COUNTER` holds the same values). The
+footprint is inferred from the products, so the shopper's hips are just inside its near edge;
+renders cut a recess there.
 
 ## Product frame
 
@@ -53,5 +60,5 @@ Details are in [FORMAT.md](FORMAT.md#wrist-frame).
 
 A robot user typically chooses where the counter sits in the robot's world. They then apply
 one rigid transform, `T_robot_world_from_counter`, to every pose. The counter top is at
-`z = 0` here. In the [robot data](../../robots/docs/FORMAT.md#frames-and-time) the FFW-SH5 retargeting puts it at a configurable height
-(0.80 m by default).
+`z = 0` here. In the [robot data](../../robots/docs/FORMAT.md#frames-and-time) the counter top is
+0.80 m above the floor, an assumed height.

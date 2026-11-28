@@ -1,6 +1,6 @@
-# ARCADE product mesh: pepero_white, in the product frame (bounding-box centre)
+# ARCADE product mesh: box_flat, in the product frame (bounding-box centre)
 mtllib material.mtl
-o pepero_white
+o box_flat
 v 0.082500 -0.043000 0.011000
 v 0.081000 -0.043000 0.012500
 v 0.081000 -0.044500 0.011000
@@ -4183,7 +4183,7 @@ vt 0.389622 0.283748
 vt 0.390416 0.284554
 vt 0.389639 0.284529
 s 0
-usemtl pepero_white_kbo_giants
+usemtl material_0
 f 1506/1/1 105/2/1 6/3/1 106/4/1
 f 1497/5/2 114/6/2 9/7/2 115/8/2
 f 1488/9/3 126/10/3 9/7/3 114/6/3

@@ -10,5 +10,10 @@ renders from `samples/arcade_human_sample`.
 | `episodes_grid.webp` | `arcade-human grid RELEASE J03826_left,J00272_right,J00051_right,J02562_right,J06218_left,J04596_right grid.mp4 --webp episodes_grid.webp` |
 | `products.png` | `arcade-human products RELEASE products.png` |
 | `episode_card.png` | `arcade-human overview samples/arcade_human_sample J03826_left episode_card.png` |
+| `episode_card_rejected.png` | `arcade-human overview samples/arcade_human_sample J06564_right episode_card_rejected.png` (the sample episode that fails the quality check) |
 
 Renders need the `render` extra and ffmpeg; the card needs the `viz` extra.
+
+The product textures in the renders are the released, de-identified ones: brand names, logos,
+codes and readable text are replaced by colour fields and unreadable glyphs, so the products do
+not look like the real packaging. Geometry and dimensions are the measured ones.

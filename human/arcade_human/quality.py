@@ -47,7 +47,13 @@ def summarize(root: str) -> Dict:
     joint_ok, arm_ok, n_frames = Counter(), 0, 0
     n_events = agree = 0
     durations = []
+    failed = Counter()
+    n_all = 0
     for ep in ds:
+        n_all += 1
+        if not ep.check_passed:                         # figures below are over the episodes that pass the check
+            failed.update(ep.check_failed)
+            continue
         k, first, last = ep.handling()
         kinds[k] += 1
         if k == "one_hand":
@@ -76,7 +82,9 @@ def summarize(root: str) -> Dict:
 
     ov = overlap_report(ds)
     return {
-        "episodes": len(ds),
+        "episodes": n_all - sum(1 for r in ds.index if not r.get("check_passed", True)),
+        "episodes_released": n_all,
+        "check_failed": dict(sorted(failed.items())),
         "task_kinds": dict(pass_=kinds["pass"], both_hands=kinds["both_hands"], one_hand=kinds["one_hand"],
                            repeated=kinds["repeated"], one_hand_by_hand=dict(hands_first)),
         "duration_s": [round(min(durations), 1), round(max(durations), 1)],
@@ -96,6 +104,9 @@ def to_markdown(q: Dict) -> str:
         ("episodes", f"{q['episodes']} ({k['pass_']} hand-to-hand passes, {k['both_hands']} both-hands holds, "
                      f"{k['one_hand']} one hand: {', '.join(f'{v} {h}' for h, v in sorted(k['one_hand_by_hand'].items()))}"
                      + (f"; {k['repeated']} picked up twice" if k['repeated'] else "") + ")"),
+        ("quality check", f"{q['episodes']} of {q['episodes_released']} released episodes pass"
+                          + ("; failed rules: " + ", ".join(f"{k} {v}" for k, v in q["check_failed"].items()) if q["check_failed"] else "")
+                          + ". The figures in this table are over the passing episodes"),
         ("duration", f"{q['duration_s'][0]} to {q['duration_s'][1]} s per episode"),
         ("frames", f"{q['episode_frames']:,} episode frames from {q['unique_session_frames']:,} unique frames "
                    f"({q['unique_minutes']} min); episodes overlap"),

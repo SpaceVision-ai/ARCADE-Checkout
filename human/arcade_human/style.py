@@ -28,9 +28,11 @@ SIDES = ("left", "right")
 FONT_CANDIDATES = {
     False: (os.environ.get("ARCADE_FONT", ""), "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
             "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", "/Library/Fonts/Arial.ttf",
+            "/System/Library/Fonts/Supplemental/Arial.ttf",
             "C:/Windows/Fonts/arial.ttf"),
     True: (os.environ.get("ARCADE_FONT_BOLD", ""), "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
            "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", "/Library/Fonts/Arial Bold.ttf",
+           "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
            "C:/Windows/Fonts/arialbd.ttf"),
 }
 

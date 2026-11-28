@@ -1,20 +1,20 @@
 {
  "name": "ARCADE-Checkout-Human",
- "release_version": "1.0.0",
+ "release_version": "1.1.0",
  "schema": {
   "name": "arcade_human",
-  "version": "1.0.0"
+  "version": "1.1.0"
  },
  "description": "Human checkout demonstrations at a self-checkout counter: 3-D body and hand pose, product 6-DoF trajectories, grasp/release events, hand-object holding labels and object segmentation masks.",
  "session": "capture_20260818_01",
  "fps": 19.940648891050056,
- "n_episodes": 2,
- "n_frames": 338,
- "n_events": 6,
- "n_mask_files": 859,
+ "n_episodes": 4,
+ "n_frames": 611,
+ "n_events": 12,
+ "n_mask_files": 1419,
  "products": [
-  "mesil",
-  "pepero_white"
+  "bottle_c",
+  "box_flat"
  ],
  "cameras_for_masks": [
   "left",
@@ -55,15 +55,39 @@
   "release"
  ],
  "not_included": {
-  "rgb": "RGB video and frames are not released (they show people)",
+  "rgb": "RGB video is not part of this release. For recordings whose participants consented to sharing, it can be provided on request, after consultation and de-identification",
+  "camera_calibration": "camera intrinsics and extrinsics are not released",
   "scan_events": "none: the point-of-sale scanner was not linked during this capture",
   "product_physics": "mass and friction were not measured",
   "face_keypoints": "not released"
  },
- "selection": "all segmented episodes",
+ "selection": "all segmented episodes of the session. check_passed marks the episodes that pass the automatic quality check; check_failed lists the rules an episode fails (check_rules)",
+ "n_episodes_passed": 3,
+ "check_rules": {
+  "product_below_counter": "the product is below the counter top",
+  "product_floating": "a resting product is not on the counter, or a carried product is away from the carrying hand",
+  "resting_product_moves": "a resting product moves, tilts, stands upside down or is not on a stable face",
+  "product_leaves_hand": "the carried product leaves the palm of the carrying hand",
+  "product_slips_in_hand": "the carried product jumps in the hand from one frame to the next",
+  "hand_product_gap": "a gap between hand and product at a grasp or a release",
+  "product_jumps": "the product jumps between frames",
+  "hand_in_product": "the hand is inside the product while carrying it",
+  "product_pose_missing": "the product pose is unknown in too many frames",
+  "product_vs_masks": "the posed product disagrees with its camera masks over the episode or over a run of frames",
+  "held_product_vs_masks": "while carried well above the counter, the posed product disagrees with its camera masks",
+  "held_product_axis": "while carried well above the counter, the long axis of the posed product disagrees with its masks"
+ },
+ "counter": {
+  "x0": -0.551,
+  "x1": 0.057,
+  "y0": -0.84,
+  "y1": 0.541,
+  "top_z": 0.0,
+  "note": "footprint of the counter top in the counter frame (m): a box around every resting product position of the session"
+ },
  "provenance": {
   "session": "capture_20260818_01",
-  "processed": "2026-11-10"
+  "processed": "2026-11-25"
  },
  "files": {
   "meta/info.json": "dataset-level metadata, versions and conventions",
@@ -74,5 +98,5 @@
   "objects/": "product meshes (OBJ + MTL + texture), one variant per axis permutation",
   "segmentation/": "per episode: instances.json and masks.zip, binary masks of the tracked objects (optional)"
  },
- "built_utc": "2026-11-24T08:54:00Z"
+ "built_utc": "2026-11-26T03:29:50Z"
 }
