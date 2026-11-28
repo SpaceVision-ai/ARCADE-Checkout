@@ -20,8 +20,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install -e ../human -e ".[dev,render]"
-      - run: pip install -e ".[solver]"   # the solver needs SciPy >= 1.16, i.e. Python >= 3.11
-        if: matrix.python-version != '3.10'
       - run: pip install -e ".[robot]" && bash retarget/universal_robots_ur10e_robotiq_2f140/fetch_robot.sh   # UR10e + 2F-140 URDF for the FK test
         if: matrix.python-version != '3.10'
       - run: bash retarget/unitree_g1_dex3/fetch_robot.sh   # G1 + Dex3-1 URDF and MJCF for the FK tests

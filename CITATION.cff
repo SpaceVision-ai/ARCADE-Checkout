@@ -1,13 +1,14 @@
 cff-version: 1.2.0
 message: "If you use this dataset or code, please cite it as below."
 title: "ARCADE-Checkout: robot-learning data for retail checkout, built from real human demonstrations"
-version: "1.0.0"
+version: "1.1.0"
 abstract: >-
   Human data (ARCADE-Checkout-Human): 3-D human hand-object demonstrations at a self-checkout counter (body, hands,
-  product 6-DoF pose, grasp/release events, segmentation masks). Robot data (ARCADE-Checkout-FFW-SH5,
-  ARCADE-Checkout-UR10e, ARCADE-Checkout-G1): the episodes retargeted to the ROBOTIS FFW-SH5 humanoid,
-  to two UR10e arms with Robotiq 2F-140 grippers and to the Unitree G1 humanoid with Dex3-1 hands, in
-  LeRobot format.
+  product 6-DoF pose, grasp/release events, per-hand holding and carrying intervals, segmentation masks).
+  Robot data (ARCADE-Checkout-FFW-SH5, ARCADE-Checkout-UR10e, ARCADE-Checkout-G1): the same episodes retargeted
+  to the ROBOTIS FFW-SH5 humanoid, to two UR10e arms with Robotiq 2F-140 grippers and to the Unitree G1 humanoid
+  with Dex3-1 hands, in LeRobot format. All four datasets are built from one human reconstruction. Every episode
+  is released and labelled by an automatic check; training splits use the passing episodes.
 authors:
   - name: "SpaceVision AI"
 repository-code: "https://github.com/SpaceVision-ai/ARCADE-Checkout"
